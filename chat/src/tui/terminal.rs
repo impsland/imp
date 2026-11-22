@@ -30,10 +30,10 @@ use std::time::Duration;
 use uuid::Uuid;
 
 /// Puts the terminal back as it was, also when the program panics or returns early.
-struct Restore;
+pub(super) struct Restore;
 
 impl Restore {
-    fn start() -> std::io::Result<(Self, ratatui::DefaultTerminal)> {
+    pub(super) fn start() -> std::io::Result<(Self, ratatui::DefaultTerminal)> {
         let terminal = ratatui::try_init()?;
         let guard = Self;
         execute!(std::io::stdout(), EnableMouseCapture, EnableBracketedPaste)?;

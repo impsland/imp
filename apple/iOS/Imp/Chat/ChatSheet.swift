@@ -1,3 +1,4 @@
+import ImpCore
 import ImpDesign
 import ImpKit
 import PhotosUI
@@ -462,6 +463,8 @@ private struct Composer: View {
     @State private var pickedPhotos: [PhotosPickerItem] = []
     /// The other Imp the message is for (picked with the @ button), if any.
     @State private var askedPeer: LinkImp?
+    /// The custom commands of the phone's `.agents` folder, read when the box is used.
+    @State private var commands: [CommandEntry] = []
     @FocusState private var focused: Bool
     @AppStorage(PhonePrefs.dismissedWithheldKey) private var dismissedRaw = ""
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -471,6 +474,8 @@ private struct Composer: View {
     private var trimmed: String { text.trimmingCharacters(in: .whitespacesAndNewlines) }
     /// Words or files: either is a message.
     private var canSend: Bool { !trimmed.isEmpty || !draft.isEmpty }
+    /// The commands the typed line starts to name.
+    private var suggestions: [CommandEntry] { SlashSuggestions.matches(text, in: commands) }
 
     var body: some View {
         VStack(spacing: Spacing.small) {
@@ -512,6 +517,10 @@ private struct Composer: View {
                 AttachmentChips(files: draft.files) { draft.remove($0) }
                     .padding(.horizontal, Spacing.roomy)
             }
+            if !suggestions.isEmpty && !recording {
+                CommandList(commands: suggestions) { text = SlashSuggestions.completion(of: $0); Haptics.tap(.light) }
+                    .padding(.horizontal, Spacing.roomy)
+            }
             HStack(alignment: .bottom, spacing: Spacing.cozy) {
                 if recording {
                     RecordingRow(recorder: recorder, done: finishRecording, cancel: cancelRecording)
@@ -542,7 +551,10 @@ private struct Composer: View {
             .opacity(availability == .ready ? 1 : Opacity.disabled)
         }
         .padding(.vertical, Spacing.cozy)
-        .onChange(of: focused) { _, on in typing.on = on }
+        .onChange(of: focused) { _, on in
+            typing.on = on
+            if on { commands = PhoneLibrary.shared.commands() }
+        }
         .onChange(of: recorder.timedOut) { _, out in if out { finishRecording() } }
         .onDisappear { if recording { cancelRecording() } }
         .photosPicker(isPresented: $showPhotos, selection: $pickedPhotos, maxSelectionCount: max(1, draft.remaining), matching: .any(of: [.images, .videos]))
@@ -743,6 +755,7 @@ private struct Composer: View {
 
     private func send() {
         guard canSend else { return }
+        if askedPeer == nil, let plan = PhoneLibrary.shared.plan(trimmed) { return run(plan) }
         let message = trimmed.isEmpty ? "" : askedPeer.map { words("phone.chat.ask_to_prefix", $0.name) + trimmed } ?? trimmed
         if draft.isEmpty {
             source.ask(impID, message)
@@ -751,6 +764,28 @@ private struct Composer: View {
             draft.note = String(localized: "The files didn't reach its home. Try again.")
             return
         }
+        sent()
+    }
+
+    /// Sends a custom command: its text is made first (its files read, a command line refused: no shell here). Whatever
+    /// stops it stays in the box, to change.
+    private func run(_ plan: CommandPlan) {
+        let files = draft.files
+        Task { @MainActor in
+            do {
+                let message = try await PhoneLibrary.shared.prepare(plan, world: PhoneLibrary.World())
+                if let problem = source.ask(impID, message, media: files, how: CommandSettings(plan)) {
+                    draft.note = problem
+                    return
+                }
+                sent()
+            } catch {
+                draft.note = error.localizedDescription
+            }
+        }
+    }
+
+    private func sent() {
         draft.clear()
         text = ""
         askedPeer = nil

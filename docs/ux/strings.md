@@ -137,12 +137,8 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `devices.node.label` | {name}, {state}. Imps: {imps} | {name}, {state}. Imps: {imps} | {name}，{state}。Imp：{imps} |
 | `devices.node.label_empty` | {name}, {state} | {name}, {state} | {name}，{state} |
 | `devices.node.this_mac_label` | {name}, this Mac | {name}, este Mac | {name}，这台 Mac |
-| `devices.on_screen` | On its screen | En su pantalla | 在它的屏幕上 |
 | `devices.place.body` | On | En | 在 |
 | `devices.place.mind` | Thinks on | Piensa en | 思考于 |
-| `devices.plug.off` | not plugged in | desconectado | 未插上 |
-| `devices.plug.on` | plugged in | conectado | 已插上 |
-| `devices.plug.title` | What {name} can use here | Qué puede usar {name} aquí | {name} 在这里可以用什么 |
 | `devices.reach.at` | Reachable at | Accesible en | 可通过以下地址访问 |
 | `devices.reach.away` | Away | Ausente | 不在线 |
 | `devices.reach.direct` | Direct, on the local network | Directo, en la red local | 直连，走本地网络 |
@@ -170,8 +166,13 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `devices.this.info` | Link another device here. The dot shows whether The Hop lets devices find each other from anywhere. | Vincula otro dispositivo aquí. El punto indica si The Hop permite que se encuentren desde cualquier lugar. | 在这里连接另一台设备。圆点表示 The Hop 是否让设备能从任何地方互相找到。 |
 | `devices.this_mac_badge` | This Mac | Este Mac | 这台 Mac |
 | `devices.title` | Devices | Dispositivos | 设备 |
+| `devices.tool.off` | Off | Desactivada | 关 |
+| `devices.tool.on` | On | Activada | 开 |
+| `devices.tools.all_off` | Turn all off | Desactivar todas | 全部关闭 |
+| `devices.tools.all_on` | Turn all on | Activar todas | 全部开启 |
+| `devices.tools.built_in` | Built in | Integradas | 内置 |
 | `devices.tools.commands` | Commands | Comandos | 命令 |
-| `devices.tools.toggle` | Show or hide the switches | Mostrar u ocultar los interruptores | 显示或隐藏开关 |
+| `devices.tools.servers` | Tool servers | Servidores de herramientas | 工具服务器 |
 | `devices.unknown_device` | a device not linked with this Mac | un dispositivo no vinculado con este Mac | 未与这台 Mac 链接的设备 |
 | `devices.visitor.can_use` | Its device can use here | Su dispositivo puede usar aquí | 它的设备在这里可用 |
 | `devices.visitor.send_home` | Send home | Enviar a casa | 送回家 |
@@ -781,6 +782,7 @@ Every user-facing word of the new screens, by key, in the three languages. The s
 | `tool.set_traits` | Change its look | Cambiar su aspecto | 改变外观 |
 | `tool.show_animation` | View | Ver | 查看 |
 | `tool.show_background` | View background | Ver fondo | 查看背景 |
+| `tool.use_skill` | Use a skill | Usar una habilidad | 使用技能 |
 | `tool.verify` | Check results | Comprobar resultados | 检查结果 |
 | `tools.add` | Add | Añadir | 添加 |
 | `tools.collapse` | Hide the tools in {group} | Ocultar herramientas de {group} | 隐藏 {group} 中的工具 |

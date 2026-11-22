@@ -79,13 +79,14 @@ pub fn mcp_id(server: &str, tool: &str) -> String {
 
 /// The built-in tool groups in the order the Tools tab lists them, each with whether an Imp has the
 /// group before anyone chooses. Computer control is opt-in.
-pub const GROUPS: [(&str, bool); 7] = [
+pub const GROUPS: [(&str, bool); 8] = [
     ("personality", true),
     ("look", true),
     ("animations", true),
     ("triggers", true),
     ("tools", true),
     ("senses", true),
+    ("skills", true),
     ("computer", false),
 ];
 
@@ -151,6 +152,7 @@ built_in_tools! {
     ImpExportKit = ("tools", "imp_export_kit"),
     MacStatus = ("senses", "mac_status"),
     BrowserPage = ("senses", "browser_page"),
+    UseSkill = ("skills", "use_skill"),
     ComputerObserve = ("computer", "computer_observe"),
     ComputerAct = ("computer", "computer_act"),
     ComputerVerify = ("computer", "computer_verify"),

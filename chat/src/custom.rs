@@ -1,7 +1,7 @@
-//! Custom commands: `commands/NAME.md` in `~/.agents` and in a folder's `.agents`, run as `/NAME arguments`.
-//! The file's text is the message. In it `$ARGUMENTS` is what was typed after the name and `$1` to `$9` are its
-//! words (the core fills those in, `imp_engine::config::Command::message`), `` !`cmd` `` is replaced by what
-//! the command prints (the `shell` permission, with the command line as the resource) and `@path` by the
+//! Custom commands in the terminal app: `commands/NAME.md` in `~/.agents` and in a folder's `.agents`, run as
+//! `/NAME arguments`. What a command is and how its text is split and filled in is `imp_engine::custom`
+//! (the apps use it too). Here the shell and the files are reached: `` !`cmd` `` is replaced by what the
+//! command prints (the `shell` permission, with the command line as the resource) and `@path` by the
 //! file's contents (the `read` permission). The front matter says who runs it: `agent` (that Imp), `model`
 //! (for this message only) and `subtask` (a conversation of its own, whose answer is shown and not kept).
 //! A built-in command of the same name always wins.
@@ -10,12 +10,12 @@ use crate::gate::Gate;
 use crate::grammar;
 use imp_engine::BoxFuture;
 use imp_engine::config::Command;
+use imp_engine::custom::{self, Piece};
 use std::path::{Path, PathBuf};
 use std::rc::Rc;
 use std::time::Duration;
 
-/// The most a file or the output of a command adds to a message.
-const MOST_BYTES: usize = 100_000;
+pub use imp_engine::custom::{about, takes_arguments, usage};
 
 /// How long a command inside a template may run.
 const SHELL_TIMEOUT: Duration = Duration::from_secs(60);
@@ -40,39 +40,7 @@ pub struct Prepared {
 /// The custom command a line names, and the arguments after it. None for any other line, and for a name a
 /// built-in command has.
 pub fn find<'a>(line: &'a str, commands: &'a [Command]) -> Option<(&'a Command, &'a str)> {
-    let t = line.trim();
-    let (first, rest) = t.split_once(char::is_whitespace).unwrap_or((t, ""));
-    let name = first.strip_prefix('/')?;
-    if grammar::find(first).is_some() {
-        return None;
-    }
-    let command = commands.iter().find(|c| c.name == name)?;
-    Some((command, rest.trim()))
-}
-
-/// How a custom command is written in the list: its name, and its arguments when the text takes them.
-pub fn usage(c: &Command) -> String {
-    if takes_arguments(c) {
-        format!("/{} ARGUMENTS", c.name)
-    } else {
-        format!("/{}", c.name)
-    }
-}
-
-pub fn takes_arguments(c: &Command) -> bool {
-    c.template.contains("$ARGUMENTS") || (1..=9).any(|n| c.template.contains(&format!("${n}")))
-}
-
-/// What the list says about it: its description, or the first line of its text.
-pub fn about(c: &Command) -> String {
-    c.description.clone().unwrap_or_else(|| {
-        c.template
-            .lines()
-            .map(str::trim)
-            .find(|l| !l.is_empty())
-            .unwrap_or("")
-            .to_string()
-    })
+    custom::find(line, commands, |word| grammar::find(word).is_some())
 }
 
 /// Fills in a command for the arguments, and runs what its text asks for. Nothing is sent anywhere: a
@@ -82,56 +50,26 @@ pub async fn prepare(
     arguments: &str,
     world: &dyn World,
 ) -> Result<Prepared, String> {
-    let text = command.message(arguments);
+    let plan = custom::plan(command, arguments);
     Ok(Prepared {
-        text: expand(&text, world).await?,
-        agent: command.agent.clone(),
-        model: command.model.clone(),
-        subtask: command.subtask,
+        text: expand(&plan.pieces, world).await?,
+        agent: plan.agent,
+        model: plan.model,
+        subtask: plan.subtask,
     })
 }
 
-/// Replaces `` !`cmd` `` with what the command prints and `@path` with the file, in one pass, so what comes
-/// back from a command or a file is never read as a template.
-pub async fn expand(text: &str, world: &dyn World) -> Result<String, String> {
-    let mut out = String::new();
-    let mut at = 0;
-    while at < text.len() {
-        let rest = &text[at..];
-        if let Some(inner) = rest.strip_prefix("!`")
-            && let Some(end) = inner.find('`')
-        {
-            let line = inner[..end].trim();
-            if !line.is_empty() {
-                out.push_str(world.shell(line).await?.trim_end());
-                at += 3 + end;
-                continue;
-            }
-        }
-        if rest.starts_with('@')
-            && text[..at]
-                .chars()
-                .next_back()
-                .is_none_or(char::is_whitespace)
-        {
-            let word = rest[1..].split(char::is_whitespace).next().unwrap_or("");
-            let path = word.trim_end_matches([',', '.', ';', ':', '!', '?', ')', ']', '"', '\'']);
-            if !path.is_empty()
-                && let Some(content) = world.read(path).await?
-            {
-                out.push_str(&format!(
-                    "<file path=\"{path}\">\n{}\n</file>",
-                    content.trim_end()
-                ));
-                at += 1 + path.len();
-                continue;
-            }
-        }
-        let ch = rest.chars().next().expect("not at the end");
-        out.push(ch);
-        at += ch.len_utf8();
+/// Runs the pieces, one after the other, and puts the text together.
+async fn expand(pieces: &[Piece], world: &dyn World) -> Result<String, String> {
+    let mut answers = Vec::with_capacity(pieces.len());
+    for piece in pieces {
+        answers.push(match piece {
+            Piece::Text(_) => None,
+            Piece::Shell(line) => Some(world.shell(line).await?),
+            Piece::File(path) => world.read(path).await?,
+        });
     }
-    Ok(out)
+    Ok(custom::fill(pieces, &answers))
 }
 
 /// The shell and the files of this computer, as the Imp's rules allow.
@@ -172,7 +110,7 @@ impl World for Local {
                 .map_err(|e| format!("`{line}` did not start: {e}"))?;
             let mut text = String::from_utf8_lossy(&output.stdout).into_owned();
             text.push_str(&String::from_utf8_lossy(&output.stderr));
-            Ok(clip(text))
+            Ok(text)
         })
     }
 
@@ -186,22 +124,9 @@ impl World for Local {
             let bytes = tokio::fs::read(&full)
                 .await
                 .map_err(|e| format!("{path} could not be read: {e}"))?;
-            Ok(Some(clip(String::from_utf8_lossy(&bytes).into_owned())))
+            Ok(Some(String::from_utf8_lossy(&bytes).into_owned()))
         })
     }
-}
-
-/// At most [`MOST_BYTES`], cut at a character.
-fn clip(mut text: String) -> String {
-    if text.len() > MOST_BYTES {
-        let mut end = MOST_BYTES;
-        while !text.is_char_boundary(end) {
-            end -= 1;
-        }
-        text.truncate(end);
-        text.push_str("\n[cut]");
-    }
-    text
 }
 
 #[cfg(test)]
@@ -275,17 +200,8 @@ mod tests {
                 Box::pin(async { panic!("read what a command printed") })
             }
         }
-        let out = block(expand("x !`echo`", &Echo)).unwrap();
+        let out = block(expand(&custom::pieces("x !`echo`"), &Echo)).unwrap();
         assert_eq!(out, "x @src/a.rs !`rm -rf /`");
-    }
-
-    #[test]
-    fn mentions_of_things_that_are_not_files_stay() {
-        let world = Fake::default();
-        let out = block(expand("mail me@home, @nobody and @ alone, !`", &world)).unwrap();
-        assert_eq!(out, "mail me@home, @nobody and @ alone, !`");
-        // Only a word that starts with @ is asked about.
-        assert_eq!(*world.asked.borrow(), ["read nobody"]);
     }
 
     #[test]
@@ -311,7 +227,7 @@ mod tests {
     }
 
     #[test]
-    fn a_line_names_a_custom_command_unless_a_built_in_has_the_name() {
+    fn a_built_in_name_is_never_a_custom_command() {
         let commands = vec![
             Command::parse("review", "Review $ARGUMENTS").unwrap(),
             Command::parse("model", "never").unwrap(),
@@ -319,13 +235,5 @@ mod tests {
         let (c, args) = find("/review  src/auth.rs ", &commands).unwrap();
         assert_eq!((c.name.as_str(), args), ("review", "src/auth.rs"));
         assert!(find("/model gpt", &commands).is_none(), "a built-in wins");
-        assert!(find("/unknown", &commands).is_none());
-        assert!(find("review", &commands).is_none());
-        assert_eq!(usage(&commands[0]), "/review ARGUMENTS");
-        assert_eq!(usage(&command("Plain")), "/go");
-        assert_eq!(usage(&command("Look at $2")), "/go ARGUMENTS");
-        assert_eq!(about(&commands[0]), "Review $ARGUMENTS");
-        let described = command("---\ndescription: Does it\n---\nbody");
-        assert_eq!(about(&described), "Does it");
     }
 }

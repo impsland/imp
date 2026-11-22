@@ -4,7 +4,9 @@
 //! `mod.rs` is the state and the keys, `view` draws it, `help` is the card the `?` key opens, `detail` is
 //! the whole of one tool call that Ctrl+O opens, `text`
 //! measures and wraps, `select` is choosing transcript text with the mouse to copy it, `clipboard` puts
-//! it on the system clipboard, `terminal` owns the real terminal, the session, the device and the event loop.
+//! it on the system clipboard, `start` is what comes before the chat when no Imp is named (a list of Imps, or
+//! the `setup` steps that make the first one), `terminal` owns the real terminal, the session, the device and
+//! the event loop.
 
 mod clipboard;
 mod detail;
@@ -14,10 +16,14 @@ mod input;
 mod markdown;
 mod menu;
 mod select;
+mod setup;
+mod start;
 mod terminal;
 mod text;
 mod thought;
 mod view;
+
+pub use start::{Start, choose};
 
 #[cfg(test)]
 mod tests;

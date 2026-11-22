@@ -92,8 +92,11 @@ public struct MCPSignIn: Sendable {
         guard let u = URL(string: url) else { throw MCPSignInError.failed(String(localized: "Bad URL.")) }
         var r = URLRequest(url: u, timeoutInterval: 30)
         r.httpMethod = "POST"
-        for h in mcpPostHeaders(session: nil, protocolVersion: nil) { r.setValue(h.value, forHTTPHeaderField: h.name) }
-        r.httpBody = Data(mcpInitializeRequest(id: 1).utf8)
+        let message = mcpInitializeRequest(id: 1)
+        for h in (try? mcpPostHeaders(message: message, session: nil, protocolVersion: nil)) ?? [] {
+            r.setValue(h.value, forHTTPHeaderField: h.name)
+        }
+        r.httpBody = Data(message.utf8)
         guard let (_, response) = try? await session.data(for: r), let http = response as? HTTPURLResponse else { return nil }
         return http.value(forHTTPHeaderField: "WWW-Authenticate").flatMap { mcpParseChallenge(header: $0) }
     }

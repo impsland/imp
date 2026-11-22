@@ -28,7 +28,9 @@ final class HubStub: URLProtocol, @unchecked Sendable {
         switch request.url?.absoluteString ?? "" {
         case "https://mcp.example.com/mcp":
             if request.value(forHTTPHeaderField: "Authorization") == nil { (status, headers, reply) = (401, challenge, "") }
-            else if text.contains("\"initialize\"") {
+            else if text.contains("server/discover") {
+                (status, reply) = (404, #"{"jsonrpc":"2.0","id":\#(id),"error":{"code":-32601,"message":"Method not found"}}"#)
+            } else if text.contains("\"initialize\"") {
                 reply = #"{"jsonrpc":"2.0","id":\#(id),"result":{"protocolVersion":"2025-03-26","capabilities":{},"serverInfo":{"name":"n","version":"1"}}}"#
             } else if text.contains("tools/list") {
                 reply = #"{"jsonrpc":"2.0","id":\#(id),"result":{"tools":[{"name":"search","description":"d","inputSchema":{"type":"object"}},{"name":"read","description":"d","inputSchema":{"type":"object"}}]}}"#

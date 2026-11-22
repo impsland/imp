@@ -8,6 +8,8 @@ import SwiftUI
 struct DeviceNodeCard: View {
     let id: String
     let node: DeviceMap.Node
+    /// The ports of its Imps' tethers.
+    let docks: [DeviceGraph.Dock]
     let hovered: Bool
     /// What it says when hovered, and to a screen reader.
     let help: String
@@ -19,8 +21,8 @@ struct DeviceNodeCard: View {
             .overlay { shape.fill(hovered ? Tone.cardHover : Tone.card) }
             .overlay(alignment: .top) { header.opacity(node.shownState == .offline ? Opacity.dimmed : 1) }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .overlay { LinePoints(nodeID: id, ports: { DeviceGraph.Port.line($0, $1) }) }
-            .overlay { LinePoints(nodeID: id, sides: DeviceGraph.Port.tetherSides, types: [.target], ports: { side, _ in DeviceGraph.Port.tether(side) }) }
+            .overlay { LinePoints(nodeID: id, down: DeviceGraph.Metrics.channelPort, ports: { DeviceGraph.Port.line($0, $1) }) }
+            .overlay { DockPoints(nodeID: id, docks: docks) }
             .contentShape(shape)
             .help(help)
             .pointerStyle(.link)
@@ -48,7 +50,6 @@ struct DeviceNodeCard: View {
 /// device's Imp has a lighter one, so whose Imp it is can be seen at a glance, without an outline. An Imp whose
 /// body is not where it thinks wears a tiny glyph of its home device (`home`), so where it lives is seen without a line.
 struct DeviceImpChip: View {
-    let id: String
     let name: String
     let hue: Double
     let ours: Bool
@@ -77,27 +78,25 @@ struct DeviceImpChip: View {
         .background(RoundedRectangle(cornerRadius: Radius.medium, style: .continuous)
             .fill(Color.imp(hue).opacity(ours ? Opacity.tintFillStrong : Opacity.tintFill))
             .overlay { if hovered { RoundedRectangle(cornerRadius: Radius.medium, style: .continuous).fill(Tone.card) } })
-        .overlay { LinePoints(nodeID: id, sides: DeviceGraph.Port.tetherSides, types: [.source], ports: { side, _ in DeviceGraph.Port.tether(side) }) }
-        .overlay { LinePoints(nodeID: id, sides: [.left, .right], ports: { DeviceGraph.Port.talk($0, $1) }) }
         .contentShape(RoundedRectangle(cornerRadius: Radius.medium, style: .continuous))
         .help(help)
         .pointerStyle(.link)
     }
 }
 
-/// The points of a node where lines attach, on the sides given, each as a source and a target unless `types` says
-/// otherwise. `ports` names the point for a side and a type.
+/// The points of a device where its channels attach, on every side, each as a source and a target. `ports` names the
+/// point for a side and a type. On a left or right side the point is `down` from the top.
 struct LinePoints: View {
     let nodeID: String
-    var sides: [Position] = DeviceGraph.Port.sides
-    var types: [HandleType] = [.source, .target]
+    let down: CGFloat
     let ports: (Position, HandleType) -> String
 
     var body: some View {
         ZStack {
-            ForEach(sides, id: \.self) { side in
-                ForEach(types, id: \.self) { type in
+            ForEach(DeviceGraph.Port.sides, id: \.self) { side in
+                ForEach([HandleType.source, .target], id: \.self) { type in
                     LinePoint(nodeID: nodeID, id: ports(side, type), type: type, side: side)
+                        .padding(.top, side == .left || side == .right ? down : 0)
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: Self.alignment(side))
                 }
             }
@@ -106,10 +105,36 @@ struct LinePoints: View {
 
     private static func alignment(_ side: Position) -> Alignment {
         switch side {
-        case .left: .leading
-        case .right: .trailing
+        case .left: .topLeading
+        case .right: .topTrailing
         case .top: .top
         case .bottom: .bottom
+        }
+    }
+}
+
+/// The ports of the Imps' tethers on a device, each `offset` along its side. They are measured and draw nothing: the
+/// line is drawn up to them with a dot in its Imp's colour (`DeviceEdgeDrawing`).
+struct DockPoints: View {
+    let nodeID: String
+    let docks: [DeviceGraph.Dock]
+
+    var body: some View {
+        ZStack {
+            ForEach(docks, id: \.id) { dock in
+                LinePoint(nodeID: nodeID, id: dock.id, type: dock.type, side: dock.side)
+                    .padding(dock.side == .left || dock.side == .right ? .top : .leading, dock.offset)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: Self.alignment(dock.side))
+            }
+        }
+    }
+
+    private static func alignment(_ side: Position) -> Alignment {
+        switch side {
+        case .left: .topLeading
+        case .right: .topTrailing
+        case .top: .topLeading
+        case .bottom: .bottomLeading
         }
     }
 }
@@ -126,6 +151,30 @@ struct LinePoint: View {
         Handle(nodeId: nodeID, id: id, type: type, position: side, isConnectable: false)
             .allowsHitTesting(false)
             .accessibilityHidden(true)
+    }
+}
+
+/// The talk lines of the Imp in focus, drawn above the devices in the canvas's own units, so each runs from its chip to
+/// the chip it reaches and is not lost under a card (SwiftFlow draws its edges under its nodes). They take no presses.
+struct TalkLines: View {
+    let routes: [DeviceGraph.Route]
+    let viewport: Viewport
+    /// The ids of the lines in the light, or nil when everything is.
+    let lit: Set<String>?
+
+    var body: some View {
+        ViewportPortal(viewport: viewport) {
+            ZStack {
+                ForEach(routes, id: \.edge) { route in
+                    let line = getBezierPath(sourceX: route.from.x, sourceY: route.from.y, sourcePosition: route.fromSide,
+                                             targetX: route.to.x, targetY: route.to.y, targetPosition: route.toSide)
+                    DeviceEdgeDrawing(data: route.data, result: EdgePathResult(path: line.path, labelX: line.labelX, labelY: line.labelY,
+                                                                              sourceX: route.from.x, sourceY: route.from.y, targetX: route.to.x, targetY: route.to.y),
+                                      hovered: false, lit: lit?.contains(route.edge) ?? true, focused: false, motion: false)
+                }
+            }
+        }
+        .allowsHitTesting(false)
     }
 }
 
@@ -162,6 +211,7 @@ struct DeviceEdgeDrawing: View {
         ZStack {
             DrawnLine(shape: CanvasPath(path: result.path), style: style).fill(color)
                 .opacity(data.dimmed ? Opacity.disabled : 1)
+            if let hue = imp { ends(hue) }
             if motion, focused, data.live { dots }
         }
         .opacity(lit ? 1 : Opacity.dimmed)
@@ -191,6 +241,24 @@ struct DeviceEdgeDrawing: View {
         .accessibilityHidden(true)
     }
 
+    /// The Imp's colour that this line carries, if it is a tether or a talk line.
+    private var imp: Double? {
+        switch data.look {
+        case .tether(let hue), .talk(let hue): hue
+        case .local, .hop, .relay: nil
+        }
+    }
+
+    /// A dot at each end, in the Imp's colour: the line starts and ends at a point that is its Imp's own.
+    private func ends(_ hue: Double) -> some View {
+        let size = hovered ? Spacing.snug + Spacing.hairline : Spacing.snug
+        return ZStack {
+            Circle().fill(Color.imp(hue)).frame(width: size, height: size).position(x: result.sourceX, y: result.sourceY)
+            Circle().fill(Color.imp(hue)).frame(width: size, height: size).position(x: result.targetX, y: result.targetY)
+        }
+        .allowsHitTesting(false)
+    }
+
     private func dot(at fraction: Double) -> some View {
         let point = result.path.trimmedPath(from: 0, to: min(1, max(0.001, fraction))).currentPoint ?? .zero
         return Circle().fill(dotColor).frame(width: Spacing.tight, height: Spacing.tight).position(point)
@@ -209,7 +277,7 @@ struct DeviceEdgeDrawing: View {
         case .local: StrokeStyle(lineWidth: hovered ? 3 * Stroke.hairline : Stroke.focus, lineCap: .round)
         case .hop: StrokeStyle(lineWidth: hovered ? 3 * Stroke.hairline : Stroke.focus, lineCap: .round, dash: [Spacing.cozy, Spacing.small])
         case .relay: StrokeStyle(lineWidth: Stroke.hairline, lineCap: .round, dash: [Stroke.hairline, Spacing.small])
-        case .tether: StrokeStyle(lineWidth: hovered ? Stroke.focus : Stroke.hairline, lineCap: .round)
+        case .tether: StrokeStyle(lineWidth: hovered ? 3 * Stroke.hairline : Stroke.focus, lineCap: .round)
         case .talk: StrokeStyle(lineWidth: Stroke.focus, lineCap: .round, dash: [Spacing.tight, Spacing.small])
         }
     }

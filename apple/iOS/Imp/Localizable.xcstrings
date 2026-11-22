@@ -6387,6 +6387,75 @@
         }
       }
     },
+    "Commands" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Commands"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comandos"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "命令"
+          }
+        }
+      }
+    },
+    "%@ could not be read: %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ could not be read: %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo leer %@: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法读取 %@：%@"
+          }
+        }
+      }
+    },
+    "There is no Imp “%@” on this iPhone." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "There is no Imp “%@” on this iPhone."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No hay ningún Imp «%@» en este iPhone."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这部 iPhone 上没有名为“%@”的 Imp。"
+          }
+        }
+      }
+    },
     "agent.button" : {
       "comment" : "Tooltip of the wand button in a section header: opens what the Imp may do there by itself.",
       "extractionState" : "manual",
@@ -9615,30 +9684,6 @@
         }
       }
     },
-    "devices.on_screen" : {
-      "comment" : "Title of the chips of the Imps on a device's screen.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "On its screen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "En su pantalla"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "在它的屏幕上"
-          }
-        }
-      }
-    },
     "devices.place.body" : {
       "comment" : "Where an Imp's body is, as a tag on a device row.",
       "extractionState" : "manual",
@@ -9683,78 +9728,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "思考于"
-          }
-        }
-      }
-    },
-    "devices.plug.off" : {
-      "comment" : "Spoken value of a plug that is not plugged in.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "not plugged in"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "desconectado"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未插上"
-          }
-        }
-      }
-    },
-    "devices.plug.on" : {
-      "comment" : "Spoken value of a plug that is plugged in.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "plugged in"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "conectado"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已插上"
-          }
-        }
-      }
-    },
-    "devices.plug.title" : {
-      "comment" : "Title of the card of plugs: what a linked device can use of this Mac's Imps.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "What %1$@ can use here"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Qué puede usar %1$@ aquí"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ 在这里可以用什么"
           }
         }
       }
@@ -10407,6 +10380,126 @@
         }
       }
     },
+    "devices.tool.off" : {
+      "comment" : "Spoken state of a tool chip that is switched off.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Off"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desactivada"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关"
+          }
+        }
+      }
+    },
+    "devices.tool.on" : {
+      "comment" : "Spoken state of a tool chip that is switched on.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "On"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activada"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "开"
+          }
+        }
+      }
+    },
+    "devices.tools.all_off" : {
+      "comment" : "Tooltip and spoken label of the button that switches every tool of a group off.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Turn all off"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desactivar todas"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "全部关闭"
+          }
+        }
+      }
+    },
+    "devices.tools.all_on" : {
+      "comment" : "Tooltip and spoken label of the button that switches every tool of a group on.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Turn all on"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activar todas"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "全部开启"
+          }
+        }
+      }
+    },
+    "devices.tools.built_in" : {
+      "comment" : "Heading of the group of an Imp's built-in tools in a device's tools grid.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Built in"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Integradas"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "内置"
+          }
+        }
+      }
+    },
     "devices.tools.commands" : {
       "comment" : "Name of the tool that runs commands.",
       "extractionState" : "manual",
@@ -10431,26 +10524,26 @@
         }
       }
     },
-    "devices.tools.toggle" : {
-      "comment" : "Tooltip of the button that opens or closes a list of tool switches.",
+    "devices.tools.servers" : {
+      "comment" : "Heading of the group of tools that come from MCP servers in a device's tools grid.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Show or hide the switches"
+            "value" : "Tool servers"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mostrar u ocultar los interruptores"
+            "value" : "Servidores de herramientas"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "显示或隐藏开关"
+            "value" : "工具服务器"
           }
         }
       }
@@ -25187,6 +25280,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "查看背景"
+          }
+        }
+      }
+    },
+    "tool.use_skill" : {
+      "comment" : "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use a skill"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usar una habilidad"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用技能"
           }
         }
       }

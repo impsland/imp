@@ -423,5 +423,128 @@
       "n": "string",
       "total": "string"
     }
+  },
+  "cli.start.pick_title": {
+    "note": "Title of the list of Imps that opens when `imp` is run in a terminal and there are several.",
+    "en": "Who do you want to talk to?",
+    "es": "¿Con quién quieres hablar?",
+    "zh-Hans": "你想和谁聊天？"
+  },
+  "cli.start.pick_footer": {
+    "note": "Last line of the list of Imps.",
+    "en": "↑ ↓ choose · Enter open · Esc quit",
+    "es": "↑ ↓ elegir · Intro abrir · Esc salir",
+    "zh-Hans": "↑ ↓ 选择 · Enter 打开 · Esc 退出"
+  },
+  "cli.start.setup_title": {
+    "note": "Title of the first-run steps shown when `imp` is run in a terminal and there are no Imps yet.",
+    "en": "Let's set up your first Imp",
+    "es": "Preparemos tu primer Imp",
+    "zh-Hans": "来设置你的第一个 Imp"
+  },
+  "cli.start.setup_service": {
+    "note": "Question of the first step: where the model runs. The choices are the saved services, then Remote and Local.",
+    "en": "Where does the model run?",
+    "es": "¿Dónde funciona el modelo?",
+    "zh-Hans": "模型在哪里运行？"
+  },
+  "cli.start.setup_remote": {
+    "note": "Choice: a service on the internet that needs a key.",
+    "en": "Remote: an online service, needs a key",
+    "es": "Remoto: un servicio en línea, necesita una clave",
+    "zh-Hans": "远程：在线服务，需要密钥"
+  },
+  "cli.start.setup_local": {
+    "note": "Choice: a model server on this computer.",
+    "en": "Local: a model server on this computer",
+    "es": "Local: un servidor de modelos en este equipo",
+    "zh-Hans": "本地：这台电脑上的模型服务"
+  },
+  "cli.start.setup_address": {
+    "note": "Question: the address of the service. It is filled in and can be changed.",
+    "en": "Address of the service",
+    "es": "Dirección del servicio",
+    "zh-Hans": "服务地址"
+  },
+  "cli.start.setup_key": {
+    "note": "Question: the key of the service. What is typed is hidden.",
+    "en": "Your key",
+    "es": "Tu clave",
+    "zh-Hans": "你的密钥"
+  },
+  "cli.start.setup_key_optional": {
+    "note": "Hint under the key question when the service runs on this computer.",
+    "en": "Not needed for local models. Enter skips it.",
+    "es": "No hace falta para modelos locales. Intro lo omite.",
+    "zh-Hans": "本地模型不需要。按 Enter 跳过。"
+  },
+  "cli.start.setup_model": {
+    "note": "Question: the model. The field searches the list, and what is typed is used when nothing in the list matches.",
+    "en": "Search or type a model",
+    "es": "Busca o escribe un modelo",
+    "zh-Hans": "搜索或输入模型名"
+  },
+  "cli.start.setup_models_loading": {
+    "note": "Shown while the models of the service are being asked for.",
+    "en": "Looking for models…",
+    "es": "Buscando modelos…",
+    "zh-Hans": "正在查找模型…"
+  },
+  "cli.start.setup_models_none": {
+    "note": "Hint under the model question when the service gave no list of models.",
+    "en": "This service did not list its models. Type the name of one.",
+    "es": "Este servicio no listó sus modelos. Escribe el nombre de uno.",
+    "zh-Hans": "此服务没有列出模型。请输入模型名。"
+  },
+  "cli.start.setup_name": {
+    "note": "Question: the name of the new Imp.",
+    "en": "Give your Imp a name",
+    "es": "Ponle nombre a tu Imp",
+    "zh-Hans": "给你的 Imp 起个名字"
+  },
+  "cli.start.setup_footer_list": {
+    "note": "Last line of a step that is a list.",
+    "en": "↑ ↓ choose · Enter next · Esc back",
+    "es": "↑ ↓ elegir · Intro siguiente · Esc atrás",
+    "zh-Hans": "↑ ↓ 选择 · Enter 下一步 · Esc 返回"
+  },
+  "cli.start.setup_footer_field": {
+    "note": "Last line of a step that is a field.",
+    "en": "Enter next · Esc back",
+    "es": "Intro siguiente · Esc atrás",
+    "zh-Hans": "Enter 下一步 · Esc 返回"
+  },
+  "cli.start.setup_error_address": {
+    "note": "Problem with the address: it does not start with http:// or https://.",
+    "en": "Write an address that starts with http:// or https://.",
+    "es": "Escribe una dirección que empiece por http:// o https://.",
+    "zh-Hans": "请输入以 http:// 或 https:// 开头的地址。"
+  },
+  "cli.start.setup_error_key": {
+    "note": "Problem with the key: it is empty.",
+    "en": "Paste your key to continue.",
+    "es": "Pega tu clave para continuar.",
+    "zh-Hans": "请粘贴你的密钥后再继续。"
+  },
+  "cli.start.setup_error_model": {
+    "note": "Problem with the model: it is empty or not a model name.",
+    "en": "Choose a model or type its name.",
+    "es": "Elige un modelo o escribe su nombre.",
+    "zh-Hans": "请选择模型或输入模型名。"
+  },
+  "cli.start.setup_error_name": {
+    "note": "Problem with the name of the Imp.",
+    "en": "Use 1 to 32 letters, digits, - and _.",
+    "es": "Usa de 1 a 32 letras, dígitos, - y _.",
+    "zh-Hans": "请使用 1 到 32 个字母、数字、- 和 _。"
+  },
+  "cli.start.setup_error_taken": {
+    "note": "Problem with the name of the Imp: another one has it. {name} is the name.",
+    "en": "There is already an Imp called {name}.",
+    "es": "Ya hay un Imp llamado {name}.",
+    "zh-Hans": "已经有一个叫 {name} 的 Imp。",
+    "args": {
+      "name": "string"
+    }
   }
 }

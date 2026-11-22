@@ -12,6 +12,7 @@ use crate::session::{Session, SessionOptions};
 use crate::settings::Settings;
 use crate::slash::{self, Context, Outcome};
 use crate::transcript::{CallLine, DetailLine, Kind, argument_lines, call_line, result_line};
+use crate::tui::Start;
 use crate::{CliError, Result};
 use imp_engine::{
     AgentEvent, OpenAiClient, StreamEvent, ToolHost, ToolSelection, Toolbox, run_agent,
@@ -28,8 +29,13 @@ pub async fn run(
 ) -> Result<()> {
     let terminal = std::io::stdin().is_terminal() && std::io::stdout().is_terminal();
     if terminal && !plain {
+        // Without a name, the person chooses an Imp, or makes the first one, before the chat opens.
+        let name = match crate::tui::choose(settings, name).await? {
+            Start::Chat(name) => name,
+            Start::Leave => return Ok(()),
+        };
         let options = DeviceOptions::usual(settings)?;
-        return crate::tui::run(settings, name, options, !offline).await;
+        return crate::tui::run(settings, name.as_deref(), options, !offline).await;
     }
     let mut session = Session::open(settings, name, SessionOptions::default()).await?;
     let result = plain_chat(&mut session, io).await;

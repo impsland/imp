@@ -546,7 +546,8 @@ pub fn parse_reply(body: &str) -> Result<ChatReply, ChatError> {
     })
 }
 
-/// The model ids in the JSON of a model list, sorted and without repeats. Anything else is no models.
+/// The model ids in the answer to `GET /models`, trimmed, sorted and without repeats. Anything that
+/// is not a model list gives none.
 pub fn parse_model_ids(body: &str) -> Vec<String> {
     let Ok(value) = serde_json::from_str::<Value>(body) else {
         return Vec::new();
@@ -556,7 +557,9 @@ pub fn parse_model_ids(body: &str) -> Vec<String> {
         .and_then(Value::as_array)
         .into_iter()
         .flatten()
-        .filter_map(|m| m.get("id").and_then(Value::as_str).map(str::to_string))
+        .filter_map(|m| m.get("id").and_then(Value::as_str).map(str::trim))
+        .filter(|id| !id.is_empty())
+        .map(str::to_string)
         .collect();
     ids.into_iter().collect()
 }
@@ -896,6 +899,35 @@ impl OpenAiClient {
             status: status.as_u16(),
             message: error_message(&text),
         })
+    }
+
+    /// The models the service lists at `GET /models`, sorted and without repeats (see
+    /// [`parse_model_ids`]). A service that answers with something else lists none.
+    pub async fn models(&self) -> Result<Vec<String>, ChatError> {
+        let mut request = self.http.get(format!("{}/models", self.base_url));
+        if let Some(key) = &self.api_key {
+            request = request.bearer_auth(key);
+        }
+        for (name, value) in &self.headers {
+            request = request.header(name, value);
+        }
+        let response = request
+            .send()
+            .await
+            .map_err(|e| ChatError::Network(e.without_url().to_string()))?;
+        let status = response.status();
+        let text = response
+            .text()
+            .await
+            .map_err(|e| ChatError::Network(e.without_url().to_string()))?;
+        if status.is_success() {
+            Ok(parse_model_ids(&text))
+        } else {
+            Err(ChatError::Http {
+                status: status.as_u16(),
+                message: error_message(&text),
+            })
+        }
     }
 
     /// Asks for a reply and streams it. `on_event` hears every piece as it arrives and `on_retry`
@@ -1274,6 +1306,10 @@ mod tests {
         );
         assert!(parse_model_ids("nope").is_empty());
         assert!(parse_model_ids(r#"{"data":3}"#).is_empty());
+        assert_eq!(
+            parse_model_ids(r#"{"data":[{"id":" qwen3 "},{"id":" "},{"id":"qwen3"}]}"#),
+            ["qwen3"]
+        );
     }
 
     #[test]

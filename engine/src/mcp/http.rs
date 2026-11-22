@@ -1,7 +1,8 @@
 //! The Streamable HTTP transport: every message is a POST of one JSON-RPC message to one address.
-//! The server answers with one JSON message or with an event stream that carries the answer. The
-//! session id the server gives after `initialize` goes back on every later request, and a DELETE
-//! with it ends the session. What the headers and bodies mean is decided in `protocol`.
+//! The server answers with one JSON message or with an event stream that carries the answer. A
+//! stateless server needs nothing more than the revision on every request. A handshake server may
+//! give a session id after `initialize`; it goes back on every later request, and a DELETE with it
+//! ends the session. What the headers and bodies mean is decided in `protocol`.
 
 use super::auth;
 use super::client::{McpError, McpSecrets, McpSignIn};
@@ -26,7 +27,7 @@ pub(super) struct Http {
 #[derive(Default)]
 struct State {
     session: Option<String>,
-    protocol: Option<String>,
+    version: Option<String>,
 }
 
 impl Http {
@@ -58,16 +59,24 @@ impl Http {
         })
     }
 
-    pub(super) fn set_protocol(&self, version: &str) {
+    /// Sends `version` on every request from now on.
+    pub(super) fn speak(&self, version: &str) {
         if let Ok(mut state) = self.state.lock() {
-            state.protocol = Some(version.to_string());
+            state.version = Some(version.to_string());
+        }
+    }
+
+    /// Forgets the revision and the session, for a fresh `initialize`.
+    pub(super) fn reset(&self) {
+        if let Ok(mut state) = self.state.lock() {
+            *state = State::default();
         }
     }
 
     fn remembered(&self) -> (Option<String>, Option<String>) {
         self.state
             .lock()
-            .map(|s| (s.session.clone(), s.protocol.clone()))
+            .map(|s| (s.session.clone(), s.version.clone()))
             .unwrap_or_default()
     }
 
@@ -124,7 +133,7 @@ impl Http {
         let mut forced = false;
         let response = loop {
             let (session, version) = self.remembered();
-            let pairs = protocol::post_headers(session.as_deref(), version.as_deref());
+            let pairs = protocol::post_headers(message, session.as_deref(), version.as_deref());
             let mut request = self
                 .with_headers(self.client.post(&self.url), &pairs)
                 .body(message.to_string());

@@ -17,6 +17,8 @@ public enum ImpToolGroup: String, Codable, CaseIterable, Sendable, Identifiable 
     case tools
     /// The Mac's state (battery, processor, apps…) and the page open in the browser.
     case senses
+    /// Reading the skills in `~/.agents/skills` (`use_skill`).
+    case skills
     /// Operating other apps through screenshots and accessibility (`ComputerTools`). Off until switched on.
     case computer
 
@@ -33,6 +35,7 @@ public enum ImpToolGroup: String, Codable, CaseIterable, Sendable, Identifiable 
         case .triggers: String(localized: "Triggers")
         case .tools: String(localized: "Tools")
         case .senses: String(localized: "Senses")
+        case .skills: String(localized: "Skills")
         case .computer: String(localized: "Computer control")
         }
     }
@@ -45,6 +48,7 @@ public enum ImpToolGroup: String, Codable, CaseIterable, Sendable, Identifiable 
         case .triggers: "bolt.fill"
         case .tools: "wrench.and.screwdriver.fill"
         case .senses: "sensor.fill"
+        case .skills: "sparkles"
         case .computer: "cursorarrow.click.2"
         }
     }
@@ -57,6 +61,7 @@ public enum ImpToolGroup: String, Codable, CaseIterable, Sendable, Identifiable 
         case .triggers: String(localized: "Lists, adds and removes its triggers.")
         case .tools: String(localized: "Lists, adds and removes MCP servers and kits.")
         case .senses: String(localized: "Reads the battery, processor, network and open apps, and the page open in the browser.")
+        case .skills: String(localized: "Reads the skills in your .agents folder when the work matches one.")
         case .computer: String(localized: "Sees and operates other apps. Needs the Screen & System Audio Recording and Accessibility permissions.")
         }
     }
@@ -69,6 +74,7 @@ public enum OwnTools {
     public static let createImp = toolBuiltInName(tool: .impCreateImp)
     public static let status = toolBuiltInName(tool: .macStatus)
     public static let page = toolBuiltInName(tool: .browserPage)
+    public static let useSkill = toolBuiltInName(tool: .useSkill)
     public static let listTriggers = toolBuiltInName(tool: .impListTriggers)
     public static let addTrigger = toolBuiltInName(tool: .impAddTrigger)
     public static let removeTrigger = toolBuiltInName(tool: .impRemoveTrigger)

@@ -2,23 +2,26 @@ import ImpDesign
 import ImpKit
 import SwiftUI
 
-/// The frame of every Devices sheet: the picture and name in the header, the page, and the footer. Switches act at
-/// once. Done keeps them and Cancel puts them back (`DeviceEdits`).
-struct DeviceSheetShell<Page: View>: View {
+/// The frame of every Devices sheet: the picture, name, status and action icons in the header, the page, and the footer.
+/// Switches act at once. Done keeps them and Cancel puts them back (`DeviceEdits`).
+struct DeviceSheetShell<Actions: View, Page: View>: View {
     let model: AppModel
     let icon: String
     let title: String
     /// How the thing stands: the one pill in the header.
     var status: DeviceStatus?
+    @ViewBuilder var actions: Actions
     @ViewBuilder var page: Page
     @State private var edits: DeviceEdits
     @Environment(\.dismiss) private var dismiss
 
-    init(model: AppModel, icon: String, title: String, status: DeviceStatus? = nil, @ViewBuilder page: () -> Page) {
+    init(model: AppModel, icon: String, title: String, status: DeviceStatus? = nil,
+         @ViewBuilder actions: () -> Actions, @ViewBuilder page: () -> Page) {
         self.model = model
         self.icon = icon
         self.title = title
         self.status = status
+        self.actions = actions()
         self.page = page()
         _edits = State(initialValue: DeviceEdits(model))
     }
@@ -26,6 +29,7 @@ struct DeviceSheetShell<Page: View>: View {
     var body: some View {
         SheetScaffold(icon: icon, title: LocalizedStringKey(title), cancel: { edits.restore(model); dismiss() }, accessory: {
             if let status { StatusPill(status: status) }
+            actions
         }, content: {
             page
         }, footer: {
@@ -35,10 +39,17 @@ struct DeviceSheetShell<Page: View>: View {
     }
 }
 
+extension DeviceSheetShell where Actions == EmptyView {
+    init(model: AppModel, icon: String, title: String, status: DeviceStatus? = nil, @ViewBuilder page: () -> Page) {
+        self.init(model: model, icon: icon, title: title, status: status, actions: { EmptyView() }, page: page)
+    }
+}
+
 /// What a press on the canvas opens: a sheet about one device, Imp or line. Its pages are in the `…Page` files, all
-/// in one compact layout: the header has the picture, the name and one status pill. Then come a row of actions, a
-/// short list of rows with a picture each, and last, alone, what destroys. Explanations are tooltips, not text. A row
-/// that leads to another thing swaps the sheet. Forgetting asks first.
+/// in one compact layout: the header has the picture, the name, one status pill and the actions as icon buttons (link,
+/// send home, settings, forget). The page is chips that fill the width and cards of switches, with no row of its own for
+/// a single button. Explanations are tooltips, not text. A chip that leads to another thing swaps the sheet. Forgetting
+/// asks first.
 struct DeviceSheet: View {
     let model: AppModel
     let router: HomeRouter
@@ -54,9 +65,9 @@ struct DeviceSheet: View {
                                 link: { swap(.link) }, forget: { forgetting = $0 }, forgetEveryone: { forgettingEveryone = true },
                                 hop: { swap(.hop) })
         let head = head(ctx)
-        DeviceSheetShell(model: model, icon: head.icon, title: head.title, status: status(ctx)) {
+        DeviceSheetShell(model: model, icon: head.icon, title: head.title, status: status(ctx), actions: { actions(ctx) }, page: {
             page(ctx)
-        }
+        })
         .confirmationDialog(forgetting.map { String(localized: "Forget \($0.name)?") } ?? "",
                             isPresented: Binding(get: { forgetting != nil }, set: { if !$0 { forgetting = nil } }),
                             titleVisibility: .visible, presenting: forgetting) { peer in
@@ -100,6 +111,29 @@ struct DeviceSheet: View {
                     : DeviceStatus(word: map.title(of: node), tone: Tone.muted)
             }
         case .channel(let id): map.channels.first { $0.id == id }.map(map.status(of:))
+        }
+    }
+
+    /// The icon buttons in the header.
+    @ViewBuilder private func actions(_ ctx: DeviceContext) -> some View {
+        switch selection {
+        case .node(let id):
+            if let node = map.node(id) {
+                switch node.kind {
+                case .thisMac: ThisMacActions(ctx: ctx)
+                case .server: EmptyView()
+                case .mac, .phone: LinkedDeviceActions(ctx: ctx, node: node)
+                }
+            }
+        case .imp(let id, let node):
+            if let contact = map.residents(of: node).first(where: { $0.id == id }) {
+                if let entry = map.imp(id), model.profile(id) != nil {
+                    ImpActions(ctx: ctx, entry: entry)
+                } else {
+                    VisitorActions(ctx: ctx, contact: contact)
+                }
+            }
+        case .channel: EmptyView()
         }
     }
 

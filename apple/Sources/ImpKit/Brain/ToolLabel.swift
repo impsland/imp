@@ -14,6 +14,9 @@ public struct ToolLabel: Equatable, Sendable {
             (title, icon, request) = (Self.commandLine(command), "terminal", command.isEmpty ? arguments : command)
         } else if ComputerTools.isComputerTool(tool) {
             (title, icon, request) = (Self.computerTitle(tool, arguments), "cursorarrow.click.2", Self.indented(arguments))
+        } else if tool == OwnTools.useSkill {
+            let name = (try? JSONValue(jsonString: arguments))?["name"]?.string ?? ""
+            (title, icon, request) = (name.isEmpty ? String(localized: "Using a skill") : String(localized: "Using the skill “\(name)”"), "sparkles", Self.indented(arguments))
         } else {
             (title, icon, request) = (Self.displayName(tool), "hammer", Self.indented(arguments))
         }

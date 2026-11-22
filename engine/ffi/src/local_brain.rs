@@ -1,4 +1,4 @@
-//! Finding a model server on a computer: the candidates and the readers. The rules stay in `imp-engine`.
+//! Finding a model server on a computer: the candidates. The rules stay in `imp-engine`.
 
 use imp_engine::local_brain;
 
@@ -19,10 +19,4 @@ pub fn local_brain_candidates() -> Vec<LocalCandidate> {
             port: c.port,
         })
         .collect()
-}
-
-/// The model names in the answer to `GET /models`.
-#[uniffi::export]
-pub fn local_brain_parse_models(body: String) -> Vec<String> {
-    local_brain::parse_models(&body)
 }

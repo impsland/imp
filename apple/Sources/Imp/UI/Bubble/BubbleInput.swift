@@ -1,4 +1,5 @@
 import AppKit
+import ImpCore
 import ImpDesign
 import ImpKit
 import SwiftUI
@@ -17,6 +18,8 @@ struct TypingField: View {
     @State private var recorder = SoundRecorder()
     @State private var recording = false
     @State private var dropping = false
+    /// The row of the commands list the arrow keys are on.
+    @State private var picked = 0
     @FocusState private var focused: Bool
 
     var body: some View {
@@ -32,6 +35,9 @@ struct TypingField: View {
             }
             if let note = bubble.attachmentNote {
                 Text(note).font(Typeface.small).foregroundStyle(Tone.muted).padding(.leading, Spacing.snug)
+            }
+            if !suggestions.isEmpty && !recording {
+                SlashList(commands: suggestions, picked: min(picked, suggestions.count - 1), pick: { complete($0) })
             }
             field(empty: empty || busy)
                 .opacity(recording ? 0 : 1)
@@ -61,6 +67,26 @@ struct TypingField: View {
             .allowsHitTesting(false)
     }
 
+    /// What is typed: the bubble's text while it is measured (the real box has it in `text`).
+    private var typed: String { measuring ? bubble.text : text }
+
+    /// The commands the typed line starts to name.
+    private var suggestions: [CommandEntry] { model.slashSuggestions(for: typed) }
+
+    /// Puts the command in the box (and sends it when it takes no arguments and `send` is true).
+    private func complete(_ command: CommandEntry, send now: Bool = false) {
+        text = SlashSuggestions.completion(of: command)
+        picked = 0
+        if now && !command.takesArguments { send() } else { model.typingChanged(text) }
+    }
+
+    private func move(_ step: Int) -> KeyPress.Result {
+        let list = suggestions
+        guard !list.isEmpty else { return .ignored }
+        picked = (min(picked, list.count - 1) + step + list.count) % list.count
+        return .handled
+    }
+
     private func field(empty: Bool) -> some View {
         HStack(alignment: .bottom, spacing: Spacing.hairline) {
             // Measured with what's typed (`bubble.text`), so the bubble is as tall as the lines in it.
@@ -75,14 +101,35 @@ struct TypingField: View {
                 .frame(minHeight: BubbleMetrics.send)
                 .padding(.leading, Spacing.snug)
                 .focused($focused)
+                .onKeyPress(.upArrow) { move(-1) }
+                .onKeyPress(.downArrow) { move(1) }
+                .onKeyPress(.tab) {
+                    let list = suggestions
+                    guard !list.isEmpty else { return .ignored }
+                    complete(list[min(picked, list.count - 1)])
+                    return .handled
+                }
                 .onKeyPress(.return, phases: .down) { press in
+                    let list = suggestions
+                    if !list.isEmpty, !press.modifiers.contains(.shift) {
+                        let command = list[min(picked, list.count - 1)]
+                        // Already typed in full: it is sent as it is.
+                        if typed == "/" + command.name { send() } else { complete(command, send: true) }
+                        return .handled
+                    }
                     guard press.modifiers.contains(.shift) else { send(); return .handled }
                     // A new line at the caret (not at the end), which the field keeps in view.
                     NSApp.sendAction(#selector(NSResponder.insertNewlineIgnoringFieldEditor(_:)), to: nil, from: nil)
                     return .handled
                 }
-                .onChange(of: text) { _, now in if !chat && !measuring { model.typingChanged(now) } }
-                .onExitCommand { model.dismissBubble() }
+                .onChange(of: text) { _, now in
+                    picked = 0
+                    if !chat && !measuring { model.typingChanged(now) }
+                }
+                .onExitCommand {
+                    // ⎋ closes the list first, and the bubble when there is none.
+                    if suggestions.isEmpty { model.dismissBubble() } else { model.slashClosedFor = typed }
+                }
                 .disabled(asleep)
             if !measuring { addMenu }
             if !chat && model.visit == nil { IconButton(icon: "mic", help: "Talk instead") { model.talk() } }

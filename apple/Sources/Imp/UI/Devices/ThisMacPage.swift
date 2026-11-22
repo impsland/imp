@@ -2,31 +2,35 @@ import ImpDesign
 import ImpKit
 import SwiftUI
 
-/// This Mac: the way to link another device, where it can be reached, the Imps here, and last Forget everyone. What a
-/// row means is its tooltip. The Hop is a button in the screen's bar, not here.
+/// This Mac's actions, in the sheet's header: link another device, and forget everyone once anything is linked.
+struct ThisMacActions: View {
+    let ctx: DeviceContext
+
+    var body: some View {
+        HeaderAction(symbol: "qrcode", help: "settings.devices.link.title") { ctx.link() }
+            .settingAnchor(.devicesLink)
+        if !ctx.model.link.peers.isEmpty {
+            HeaderAction(symbol: "trash", help: "settings.devices.forget_all.title", destructive: true) { ctx.forgetEveryone() }
+                .settingAnchor(.devicesForgetAll)
+        }
+    }
+}
+
+/// This Mac: where it can be reached and the Imps here, as chips in one flow. What a chip means is its tooltip. The Hop is a
+/// button in the screen's bar, not here.
 struct ThisMacPage: View {
     let ctx: DeviceContext
     let node: DeviceMap.Node
 
     var body: some View {
         if ctx.model.link.status?.localNetworkBlocked == true { LocalNetworkNotice() }
-        SheetActions {
-            Button { ctx.link() } label: { FitLabel("settings.devices.link.title", systemImage: "qrcode") }
-                .buttonStyle(.imp(.primary, small: true))
-                .help(Text("devices.this.info"))
-                .settingAnchor(.devicesLink)
-        }
-        if node.addresses.isEmpty {
-            SheetRow(String(localized: "devices.reach.none"), symbol: "moon.zzz.fill")
-        } else {
-            ForEach(node.addresses, id: \.self) { SheetRow($0, symbol: "network", mono: true).help(Text("devices.reach.at")) }
-        }
-        OnItsScreen(ctx: ctx, node: node.id)
-        if !ctx.model.link.peers.isEmpty {
-            SheetActions {
-                SheetAction(title: "settings.devices.forget_all.title", symbol: "xmark.circle", role: .destructive) { ctx.forgetEveryone() }
-                    .settingAnchor(.devicesForgetAll)
+        ChipFlow {
+            if node.addresses.isEmpty {
+                ChipButton(route: "moon.zzz.fill", title: String(localized: "devices.reach.none"), mono: false, help: "devices.reach.none")
+            } else {
+                ForEach(node.addresses, id: \.self) { ChipButton(route: "network", title: $0, mono: true, help: "devices.reach.at") }
             }
+            ResidentChips(ctx: ctx, node: node.id)
         }
     }
 }

@@ -95,8 +95,7 @@ struct PhoneDevicesSection: View {
                 }
             }
             Spacer(minLength: Spacing.small)
-            Button { hub.callHome(imp.id) } label: { FitLabel("phone.callhome", systemImage: "house") }
-                .buttonStyle(.secondary)
+            HoverIconButton(systemName: "house", help: "phone.callhome", tint: Tone.text) { hub.callHome(imp.id) }
                 .accessibilityLabel(words("phone.callhome.label", imp.name))
         }
         .frame(minHeight: Sizing.hit)

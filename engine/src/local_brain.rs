@@ -1,6 +1,6 @@
 //! Finding a model server on a computer, for the first run. This is the pure part: which servers to
-//! look for and in what order, and how to read the answer of one. The requests themselves are made
-//! by the apps.
+//! look for and in what order (their model lists read with `chat::parse_model_ids`). The requests
+//! themselves are made by the apps.
 
 /// A model server that usually runs on a computer, and where it listens.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -32,29 +32,6 @@ impl LocalCandidate {
     }
 }
 
-/// The model names in the answer to `GET /models`, sorted and without repeats. Anything that is not
-/// a model list gives none.
-pub fn parse_models(body: &str) -> Vec<String> {
-    let Ok(json) = serde_json::from_str::<serde_json::Value>(body) else {
-        return Vec::new();
-    };
-    let mut names: Vec<String> = json
-        .get("data")
-        .and_then(|d| d.as_array())
-        .map(|list| {
-            list.iter()
-                .filter_map(|m| m.get("id")?.as_str())
-                .map(str::trim)
-                .filter(|id| !id.is_empty())
-                .map(str::to_owned)
-                .collect()
-        })
-        .unwrap_or_default();
-    names.sort();
-    names.dedup();
-    names
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -69,24 +46,5 @@ mod tests {
             CANDIDATES[0].base_url("localhost"),
             "http://localhost:11434/v1"
         );
-    }
-
-    #[test]
-    fn models_are_read_sorted_and_once() {
-        let body = r#"{"object":"list","data":[{"id":"qwen3"},{"id":"llama3"},{"id":"qwen3"},{"id":" "},{"x":1}]}"#;
-        assert_eq!(parse_models(body), ["llama3", "qwen3"]);
-    }
-
-    #[test]
-    fn what_is_not_a_model_list_gives_none() {
-        for body in [
-            "",
-            "nope",
-            "[]",
-            r#"{"data":"x"}"#,
-            r#"{"error":{"message":"no"}}"#,
-        ] {
-            assert!(parse_models(body).is_empty(), "{body:?}");
-        }
     }
 }

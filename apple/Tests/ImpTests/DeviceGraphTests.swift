@@ -286,25 +286,79 @@ import Testing
         #expect(try !isAway(cinder.imp.id, in: phone.id.uuidString), "Cinder is at home on the iPhone")
     }
 
-    /// A channel and a tether attach at different points, so the two never run along each other. The side of a tether
-    /// follows where its home is.
-    @Test func tethersAndChannelsAttachAtDifferentPoints() throws {
-        let away = imp("Dot", awayOn: phone.id)
-        let (_, graph) = graph(peers: [phone], imps: [away])
-        let tether = try #require(graph.edges.first { $0.data?.isTether == true })
+    /// Each Imp's tether leaves its device and arrives at its home by ports of its own: docks on the sides that face each
+    /// other, below the channel's port, so the two never run along each other.
+    @Test func everyTetherHasADockOfItsOwnAtBothEnds() throws {
+        let dot = imp("Dot", awayOn: phone.id), pip = imp("Pip", awayOn: phone.id)
+        let (_, graph) = graph(peers: [phone], imps: [dot, pip, imp("Bumble")])
+        let phoneID = phone.id.uuidString
+        let tethers = graph.edges.filter { $0.data?.isTether == true }
+        #expect(tethers.count == 2)
         let channel = try #require(graph.edges.first { $0.data?.isTether == false })
-        let leaves = try #require(graph.nodes.first { $0.id == tether.source }?.sourcePosition)
-        #expect(tether.targetHandle == DeviceGraph.Port.tether(DeviceGraph.opposite(leaves)), "it arrives at the side facing the chip")
-        #expect(DeviceGraph.Port.tetherSides.map(DeviceGraph.Port.tether).contains(try #require(tether.targetHandle)))
-        #expect(tether.targetHandle != channel.targetHandle && tether.sourceHandle != channel.sourceHandle)
-        let chip = try #require(graph.nodes.first { $0.id == tether.source })
-        #expect(DeviceGraph.Port.tether(try #require(chip.sourcePosition)) == tether.sourceHandle)
+        let body = try #require(graph.nodes.first { $0.id == phoneID }?.data.docks)
+        let home = try #require(graph.nodes.first { $0.id == mac }?.data.docks)
+        for tether in tethers {
+            let leaves = try #require(body.first { $0.id == tether.sourceHandle })
+            let arrives = try #require(home.first { $0.id == tether.targetHandle })
+            #expect(leaves.type == .source && arrives.type == .target)
+            #expect(leaves.side == .left && arrives.side == .right, "the sides that face each other")
+            #expect(tether.sourceHandle != channel.sourceHandle && tether.targetHandle != channel.targetHandle)
+        }
+        #expect(Set(body.map(\.id)).count == 2 && Set(home.map(\.id)).count == 2, "one dock for each Imp, at each end")
+        for dock in body + home {
+            #expect(dock.offset >= DeviceGraph.Metrics.channelPort + DeviceGraph.Metrics.dockGap - 0.001, "below the channel's port")
+        }
+    }
 
+    /// The lines of one device run side by side: the docks keep the order of the chips, at both ends, and apart.
+    @Test func docksKeepTheChipsOrderSoLinesDoNotCross() throws {
+        let imps = ["Dot", "Pip", "Cinder", "Noodle"].map { imp($0, awayOn: phone.id) }
+        let (_, graph) = graph(peers: [phone], imps: imps)
+        let phoneID = phone.id.uuidString
+        let tethers = graph.edges.filter { $0.data?.isTether == true }
+        let body = try #require(graph.nodes.first { $0.id == phoneID }?.data.docks)
+        let home = try #require(graph.nodes.first { $0.id == mac }?.data.docks)
+        func offset(_ id: String?, in docks: [DeviceGraph.Dock]) throws -> CGFloat { try #require(docks.first { $0.id == id }).offset }
+        let pairs = try tethers.map { (leaves: try offset($0.sourceHandle, in: body), arrives: try offset($0.targetHandle, in: home)) }
+            .sorted { $0.leaves < $1.leaves }
+        #expect(pairs.count == 4)
+        for (above, below) in zip(pairs, pairs.dropFirst()) {
+            #expect(below.leaves - above.leaves >= DeviceGraph.Metrics.dockGap - 0.001, "apart at the body")
+            #expect(below.arrives - above.arrives >= DeviceGraph.Metrics.dockGap - 0.001, "apart, and in the same order, at the home")
+        }
+    }
+
+    @Test func spreadKeepsOrderGapAndRange() {
+        #expect(DeviceGraph.spread([], gap: 10, in: 0...100).isEmpty)
+        #expect(DeviceGraph.spread([40], gap: 10, in: 0...100) == [40])
+        #expect(DeviceGraph.spread([500], gap: 10, in: 0...100) == [100], "never outside the range")
+        #expect(DeviceGraph.spread([-5], gap: 10, in: 0...100) == [0])
+        #expect(DeviceGraph.spread([50, 50, 50], gap: 10, in: 0...100) == [50, 60, 70], "the ones that tie keep their order and part")
+        #expect(DeviceGraph.spread([30, 20], gap: 10, in: 0...100) == [30, 20], "the result follows the order given")
+        #expect(DeviceGraph.spread([95, 96, 97], gap: 10, in: 0...100) == [80, 90, 100], "pushed back from the end together")
+        let crowded = DeviceGraph.spread([10, 10, 10, 10, 10], gap: 10, in: 0...20)
+        #expect(crowded == [0, 5, 10, 15, 20], "when they cannot keep the gap they share the room evenly")
+    }
+
+    @Test func docksSitOnTheSidesThatFaceEachOther() {
+        let body = CGRect(x: 400, y: 100, width: 200, height: 100), chip = CGRect(x: 410, y: 150, width: 80, height: 28)
+        func dockSide(of home: CGRect) -> (body: Position?, home: Position?) {
+            let tether = DeviceGraph.Tether(imp: UUID(), body: "b", home: "h", chip: chip)
+            let docks = DeviceGraph.docks(for: [tether], frames: ["b": body, "h": home])
+            return (docks["b"]?.first?.side, docks["h"]?.first?.side)
+        }
+        #expect(dockSide(of: CGRect(x: 0, y: 100, width: 200, height: 100)) == (.left, .right))
+        #expect(dockSide(of: CGRect(x: 900, y: 0, width: 200, height: 60)) == (.right, .left))
+        #expect(dockSide(of: CGRect(x: 420, y: 300, width: 100, height: 60)) == (.bottom, .top))
+        #expect(dockSide(of: CGRect(x: 420, y: -200, width: 100, height: 60)) == (.top, .bottom))
+        let dock = DeviceGraph.docks(for: [.init(imp: UUID(), body: "b", home: "h", chip: chip)],
+                                     frames: ["b": body, "h": CGRect(x: 0, y: 0, width: 200, height: 400)])
+        #expect(dock["b"]?.first?.offset == 64, "level with its chip (the chip's middle, 64 down)")
+        #expect(dock["h"]?.first?.offset == 164, "at the home, level with where the chip is")
+    }
+
+    @Test func facingIsTheSideTowardsTheOtherDevice() {
         let device = CGRect(x: 400, y: 100, width: 200, height: 100)
-        #expect(DeviceGraph.tetherSide(from: device, home: CGRect(x: 0, y: 100, width: 200, height: 100)) == .left, "it never loops under the cards")
-        #expect(DeviceGraph.tetherSide(from: device, home: CGRect(x: 900, y: 0, width: 200, height: 60)) == .right)
-        #expect(DeviceGraph.tetherSide(from: device, home: CGRect(x: 420, y: 300, width: 100, height: 60)) == .bottom)
-        #expect(DeviceGraph.tetherSide(from: device, home: CGRect(x: 420, y: -200, width: 100, height: 60)) == .top)
         #expect(DeviceGraph.facing(from: device, to: CGRect(x: 800, y: 0, width: 10, height: 10)) == .right)
         #expect(DeviceGraph.facing(from: device, to: CGRect(x: 0, y: 0, width: 10, height: 10)) == .left)
         #expect(DeviceGraph.facing(from: device, to: CGRect(x: 450, y: 0, width: 10, height: 10)) == .top)
@@ -378,6 +432,51 @@ import Testing
         #expect(shown.nodes == graph.nodes, "focus changes no place")
         #expect(graph.shown(in: nil) == graph)
         #expect(graph.sheet(ofEdge: line.id) == .about(.imp(bumble.id, in: mac)))
+    }
+
+    /// A talk line runs from its own chip to the chip it reaches, by ports of its own: the ones that leave one chip are
+    /// apart, on the side that faces the others, and in the order of the chips they reach, so they fan out and never cross.
+    @Test func talkLinesLeaveAndArriveAtTheirChipsInOrder() throws {
+        let imps = ["Dot", "Pip", "Cinder", "Noodle"].map { imp($0, awayOn: phone.id) }, bumble = imp("Bumble")
+        let (_, graph) = graph(peers: [phone], imps: imps + [bumble])
+        let routes = DeviceGraph.talkRoutes(in: graph.revealing(imp: bumble.id))
+        let frames = DeviceGraph.chipFrames(in: graph)
+        let mine = try #require(frames[DeviceGraph.impNodeID(bumble.id, in: mac)])
+        #expect(routes.count == 4)
+        var leaving: [(y: CGFloat, target: CGFloat)] = []
+        for route in routes {
+            guard case .talk(let from, let to)? = route.data.kind as DeviceGraph.EdgeData.Kind? else { Issue.record("not a talk line"); continue }
+            #expect(from == bumble.id)
+            let target = try #require(frames[DeviceGraph.impNodeID(to, in: phone.id.uuidString)])
+            #expect(route.fromSide == .right, "leaves the side that faces the other device")
+            #expect(route.from.x == mine.maxX && route.from.y > mine.minY && route.from.y < mine.maxY, "leaves its own chip")
+            #expect(route.toSide != .right, "arrives on a side that is not turned away")
+            #expect(onSide(route.to, route.toSide, of: target), "arrives on the chip it reaches, not at its card")
+            leaving.append((route.from.y, target.midY))
+        }
+        #expect(Set(leaving.map(\.y)).count == 4, "a port of its own for each line")
+        let byPort = leaving.sorted { $0.y < $1.y }.map(\.target)
+        #expect(byPort == byPort.sorted(), "the ports keep the order of the chips they reach")
+    }
+
+    private func onSide(_ point: CGPoint, _ side: Position, of frame: CGRect) -> Bool {
+        switch side {
+        case .left: point.x == frame.minX && (frame.minY...frame.maxY).contains(point.y)
+        case .right: point.x == frame.maxX && (frame.minY...frame.maxY).contains(point.y)
+        case .top: point.y == frame.minY && (frame.minX...frame.maxX).contains(point.x)
+        case .bottom: point.y == frame.maxY && (frame.minX...frame.maxX).contains(point.x)
+        }
+    }
+
+    /// A line to a chip that has another chip in the way on the facing side arrives at its top or bottom instead.
+    @Test func aLineDoesNotCrossAChipToReachItsTarget() {
+        let first = CGRect(x: 0, y: 44, width: 100, height: 28), second = CGRect(x: 106, y: 44, width: 100, height: 28)
+        let third = CGRect(x: 0, y: 78, width: 206, height: 28), far = CGRect(x: 500, y: 50, width: 100, height: 28)
+        let all = [first, second, third]
+        #expect(DeviceGraph.openSide(of: second, toward: far, among: all) == .right, "nothing in the way")
+        #expect(DeviceGraph.openSide(of: first, toward: far, among: all) == .top, "the first row has room above")
+        #expect(DeviceGraph.openSide(of: third, toward: far, among: all) == .right)
+        #expect(DeviceGraph.openSide(of: first, toward: CGRect(x: 0, y: 300, width: 100, height: 28), among: all) == .bottom)
     }
 
     /// Tethers are hidden by default and appear when their Imp or one of their two devices is in focus.

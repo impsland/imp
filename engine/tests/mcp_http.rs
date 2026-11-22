@@ -13,8 +13,27 @@ use tokio::net::TcpListener;
 /// What one request carried: its headers (names in lower case) and its JSON body.
 type Seen = Arc<Mutex<Vec<(HashMap<String, String>, Value)>>>;
 
-fn reply(method: &str, body: &Value) -> String {
+/// The answer of a server that speaks the stateless revision when `stateless` is set, and only the
+/// handshake otherwise.
+fn reply(method: &str, body: &Value, stateless: bool) -> String {
     let (kind, extra, text) = match method {
+        "server/discover" if stateless => (
+            "application/json",
+            "",
+            json!({ "jsonrpc": "2.0", "id": body["id"], "result": {
+                "resultType": "complete",
+                "supportedVersions": ["2026-07-28", "2025-11-25"],
+                "capabilities": { "tools": {} },
+            } })
+            .to_string(),
+        ),
+        "server/discover" => {
+            let text = json!({ "jsonrpc": "2.0", "id": body["id"], "error": { "code": -32601, "message": "Method not found" } }).to_string();
+            return format!(
+                "HTTP/1.1 400 Bad Request\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{text}",
+                text.len()
+            );
+        }
         "initialize" => (
             "application/json",
             "Mcp-Session-Id: session-7\r\n",
@@ -53,7 +72,7 @@ fn reply(method: &str, body: &Value) -> String {
     )
 }
 
-async fn serve() -> (String, Seen) {
+async fn serve(stateless: bool) -> (String, Seen) {
     let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
     let url = format!("http://{}/mcp", listener.local_addr().unwrap());
     let seen: Seen = Arc::default();
@@ -95,7 +114,7 @@ async fn serve() -> (String, Seen) {
                 let body: Value = serde_json::from_str(&body).unwrap_or(Value::Null);
                 let method = body["method"].as_str().unwrap_or_default().to_string();
                 // A reply to the server's own request carries no method. It gets no answer of substance.
-                let answer = reply(&method, &body);
+                let answer = reply(&method, &body, stateless);
                 log.lock().unwrap().push((headers, body));
                 let _ = socket.write_all(answer.as_bytes()).await;
             });
@@ -119,7 +138,7 @@ fn spec(url: &str) -> McpServerSpec {
 
 #[tokio::test]
 async fn initialize_list_and_call_over_json_and_event_streams() {
-    let (url, seen) = serve().await;
+    let (url, seen) = serve(false).await;
     let client = McpClient::connect(&spec(&url), Duration::from_secs(5))
         .await
         .unwrap();
@@ -140,6 +159,7 @@ async fn initialize_list_and_call_over_json_and_event_streams() {
     assert_eq!(
         methods,
         [
+            "server/discover",
             "initialize",
             "notifications/initialized",
             "tools/list",
@@ -152,21 +172,62 @@ async fn initialize_list_and_call_over_json_and_event_streams() {
         assert!(headers["accept"].contains("text/event-stream"));
         assert_eq!(headers["content-type"], "application/json");
     }
+    // Discovery asked for the stateless revision. The handshake that followed it starts afresh.
+    assert_eq!(seen[0].0["mcp-protocol-version"], "2026-07-28");
+    assert_eq!(seen[0].0["mcp-method"], "server/discover");
+    assert!(!seen[1].0.contains_key("mcp-protocol-version"));
+    assert!(!seen[1].0.contains_key("mcp-session-id"));
     // The session id from the answer to initialize is sent on every request after it.
-    assert!(!seen[0].0.contains_key("mcp-session-id"));
-    for (headers, _) in &seen[1..] {
+    for (headers, _) in &seen[2..] {
         assert_eq!(headers["mcp-session-id"], "session-7");
         assert_eq!(headers["mcp-protocol-version"], "2025-03-26");
+        assert!(!headers.contains_key("mcp-method"));
     }
     // The server's own request got a plain refusal.
-    let refusal = &seen[3].1;
+    let refusal = &seen[4].1;
     assert_eq!(refusal["id"], 99);
     assert_eq!(refusal["error"]["code"], -32601);
 }
 
 #[tokio::test]
+async fn a_stateless_server_gets_no_handshake_and_no_session() {
+    let (url, seen) = serve(true).await;
+    let client = McpClient::connect(&spec(&url), Duration::from_secs(5))
+        .await
+        .unwrap();
+    assert_eq!(client.list_tools().await.unwrap().len(), 2);
+    let text = client.call_tool("echo", json!({ "text": "hi" })).await;
+    assert_eq!(text.unwrap(), "echo: hi");
+    client.close().await.unwrap();
+
+    let seen = seen.lock().unwrap();
+    let methods: Vec<&str> = seen
+        .iter()
+        .filter_map(|(_, b)| b["method"].as_str())
+        .collect();
+    assert_eq!(methods, ["server/discover", "tools/list", "tools/call"]);
+    // Every request names the revision, the method and, for a call, the tool. The reply to the
+    // server's own request is not a request, so it names no method.
+    for (headers, body) in seen.iter().filter(|(_, b)| b["method"].is_string()) {
+        assert_eq!(headers["mcp-protocol-version"], "2026-07-28");
+        assert_eq!(headers["mcp-method"], body["method"].as_str().unwrap());
+        assert_eq!(
+            body["params"]["_meta"]["io.modelcontextprotocol/protocolVersion"],
+            "2026-07-28"
+        );
+        assert!(!headers.contains_key("mcp-session-id"));
+    }
+    let call = seen
+        .iter()
+        .find(|(_, b)| b["method"] == "tools/call")
+        .unwrap();
+    assert_eq!(call.0["mcp-name"], "echo");
+    assert!(seen.iter().all(|(h, _)| h[":method"] == "POST"));
+}
+
+#[tokio::test]
 async fn closing_a_session_sends_a_delete_with_its_id() {
-    let (url, seen) = serve().await;
+    let (url, seen) = serve(false).await;
     let client = McpClient::connect(&spec(&url), Duration::from_secs(5))
         .await
         .unwrap();
@@ -216,7 +277,11 @@ async fn a_server_without_sessions_gets_no_delete() {
                     .to_string(),
             );
             let body = if text.contains("\"initialize\"") {
-                json!({ "jsonrpc": "2.0", "id": 1, "result": {} }).to_string()
+                let request: Value = text
+                    .split_once("\r\n\r\n")
+                    .and_then(|(_, body)| serde_json::from_str(body).ok())
+                    .unwrap_or_default();
+                json!({ "jsonrpc": "2.0", "id": request["id"], "result": {} }).to_string()
             } else {
                 String::new()
             };
@@ -241,7 +306,7 @@ async fn a_server_without_sessions_gets_no_delete() {
 
 #[tokio::test]
 async fn a_switched_off_tool_is_not_offered_and_headers_are_not_shown() {
-    let (url, _) = serve().await;
+    let (url, _) = serve(false).await;
     let s = spec(&url);
     let shown = format!("{s:?}");
     assert!(shown.contains("Authorization"));

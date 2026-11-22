@@ -286,12 +286,6 @@
     "es": "Piensa en",
     "zh-Hans": "思考于"
   },
-  "devices.tools.toggle": {
-    "note": "Tooltip of the button that opens or closes a list of tool switches.",
-    "en": "Show or hide the switches",
-    "es": "Mostrar u ocultar los interruptores",
-    "zh-Hans": "显示或隐藏开关"
-  },
   "devices.reach.yes": {
     "note": "Status of this Mac when other devices can reach it.",
     "en": "Reachable",
@@ -316,38 +310,11 @@
     "es": "Sin uso",
     "zh-Hans": "未使用"
   },
-  "devices.plug.on": {
-    "note": "Spoken value of a plug that is plugged in.",
-    "en": "plugged in",
-    "es": "conectado",
-    "zh-Hans": "已插上"
-  },
-  "devices.plug.off": {
-    "note": "Spoken value of a plug that is not plugged in.",
-    "en": "not plugged in",
-    "es": "desconectado",
-    "zh-Hans": "未插上"
-  },
-  "devices.plug.title": {
-    "note": "Title of the card of plugs: what a linked device can use of this Mac's Imps.",
-    "en": "What {name} can use here",
-    "es": "Qué puede usar {name} aquí",
-    "zh-Hans": "{name} 在这里可以用什么",
-    "args": {
-      "name": "string"
-    }
-  },
   "devices.edge.travelling": {
     "note": "Title of the chips of the Imps going across a line.",
     "en": "Travelling",
     "es": "De viaje",
     "zh-Hans": "往来中"
-  },
-  "devices.on_screen": {
-    "note": "Title of the chips of the Imps on a device's screen.",
-    "en": "On its screen",
-    "es": "En su pantalla",
-    "zh-Hans": "在它的屏幕上"
   },
   "devices.forget.named": {
     "note": "Button that forgets one linked device, with its name.",
@@ -441,5 +408,41 @@
     "en": "Show all",
     "es": "Ver todo",
     "zh-Hans": "显示全部"
+  },
+  "devices.tools.built_in": {
+    "note": "Heading of the group of an Imp's built-in tools in a device's tools grid.",
+    "en": "Built in",
+    "es": "Integradas",
+    "zh-Hans": "内置"
+  },
+  "devices.tools.servers": {
+    "note": "Heading of the group of tools that come from MCP servers in a device's tools grid.",
+    "en": "Tool servers",
+    "es": "Servidores de herramientas",
+    "zh-Hans": "工具服务器"
+  },
+  "devices.tools.all_on": {
+    "note": "Tooltip and spoken label of the button that switches every tool of a group on.",
+    "en": "Turn all on",
+    "es": "Activar todas",
+    "zh-Hans": "全部开启"
+  },
+  "devices.tools.all_off": {
+    "note": "Tooltip and spoken label of the button that switches every tool of a group off.",
+    "en": "Turn all off",
+    "es": "Desactivar todas",
+    "zh-Hans": "全部关闭"
+  },
+  "devices.tool.on": {
+    "note": "Spoken state of a tool chip that is switched on.",
+    "en": "On",
+    "es": "Activada",
+    "zh-Hans": "开"
+  },
+  "devices.tool.off": {
+    "note": "Spoken state of a tool chip that is switched off.",
+    "en": "Off",
+    "es": "Desactivada",
+    "zh-Hans": "关"
   }
 }

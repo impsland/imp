@@ -13,8 +13,8 @@ packages:
 settings:
   base:
     SWIFT_VERSION: "6.0"
-    MARKETING_VERSION: "3.6.1"
-    CURRENT_PROJECT_VERSION: "36"
+    MARKETING_VERSION: "3.7.0"
+    CURRENT_PROJECT_VERSION: "37"
     DEVELOPMENT_TEAM: ""
     CODE_SIGN_STYLE: Automatic
     # Xcode runs on Apple silicon only, so the Simulator is arm64 too, like the core built for it.
@@ -82,6 +82,9 @@ targets:
         UIApplicationSceneManifest:
           UIApplicationSupportsMultipleScenes: false
         UIRequiresFullScreen: true
+        # The Documents folder holds the `.agents` folder (skills and commands), reachable from the Files app and Finder.
+        UIFileSharingEnabled: true
+        LSSupportsOpeningDocumentsInPlace: true
         ITSAppUsesNonExemptEncryption: false
   # Reference images of the iPhone's own screens. They need the Simulator to run, so they run on a
   # developer machine (docs/apps/testing.md). `make ios-snapshots-build` only builds them.

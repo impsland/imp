@@ -44,7 +44,7 @@ pub async fn run(cli: Cli, io: &mut Io<'_>) -> Result<()> {
 
 /// [`run`] with the configuration given: tests and other callers that know better.
 pub async fn run_with(cli: Cli, settings: &Settings, io: &mut Io<'_>) -> Result<()> {
-    // No command at all is the same as `imp chat`: the chat opens at once with the default Imp.
+    // No command at all is the same as `imp chat`.
     let command = cli.command.unwrap_or(Command::Chat {
         imp: None,
         plain: false,

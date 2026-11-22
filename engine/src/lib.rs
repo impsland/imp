@@ -6,6 +6,7 @@ pub mod agent;
 pub mod agents;
 pub mod chat;
 pub mod config;
+pub mod custom;
 pub mod link;
 pub mod local_brain;
 pub mod mcp;

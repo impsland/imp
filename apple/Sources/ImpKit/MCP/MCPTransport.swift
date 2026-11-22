@@ -40,15 +40,19 @@ public protocol MCPTransport: Sendable {
     var incoming: AsyncStream<String> { get }
     func start() async throws
     func send(_ message: String) async throws
-    /// Called once `initialize` succeeded with the negotiated protocol version.
-    func initialized(protocolVersion: String)
+    /// Whether the client may ask for the stateless revision (`server/discover`). A child process gets
+    /// the handshake: a server that does not know `server/discover` may never answer it.
+    var offersStateless: Bool { get }
+    /// The revision to send with every message from now on, or nil to forget it and any session.
+    func speak(protocolVersion: String?)
     func close() async
     /// Why the link ended, if the server said (a stdio server's stderr). Nil while it's fine.
     var lastWords: String? { get }
 }
 
 extension MCPTransport {
-    public func initialized(protocolVersion: String) {}
+    public var offersStateless: Bool { false }
+    public func speak(protocolVersion: String?) {}
     public var lastWords: String? { nil }
 }
 

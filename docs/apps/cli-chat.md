@@ -1,7 +1,10 @@
 # Using the terminal chat
 
-`imp` with no arguments opens the chat, the same as `imp chat`. It talks with your default Imp, or with the
-one you pick with `--imp NAME`. This page is about using it. The commands are in
+`imp` with no arguments opens the chat, the same as `imp chat`. It talks with the Imp you pick with
+`--imp NAME`. Without a name, a terminal opens the only Imp there is, lets you choose when there are
+several (arrow keys and Enter, Esc to quit), and when there are none, asks where the model runs, for its
+address, key and model, and a name, then opens the chat with the new Imp. Where there is no terminal, a
+missing name is an error. This page is about using it. The commands are in
 [Commands in the chat](/apps/cli-commands), and Imps that work for other Imps are in
 [Sub-agents](/apps/cli-agents).
 

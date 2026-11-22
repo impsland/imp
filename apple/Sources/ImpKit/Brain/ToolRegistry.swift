@@ -87,6 +87,7 @@ public enum ToolRegistry {
         OwnTools.setBackground: String(localized: "tool.set_background"),
         OwnTools.status: String(localized: "tool.mac_status"),
         OwnTools.page: String(localized: "tool.browser_page"),
+        OwnTools.useSkill: String(localized: "tool.use_skill"),
         OwnTools.listTriggers: String(localized: "tool.list_triggers"),
         OwnTools.addTrigger: String(localized: "tool.add_trigger"),
         OwnTools.removeTrigger: String(localized: "tool.remove_trigger"),

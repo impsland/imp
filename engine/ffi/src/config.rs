@@ -108,7 +108,7 @@ fn agent_names(store: &Store) -> Vec<String> {
     names
 }
 
-fn env_for(paths: &ConfigPaths) -> Env {
+pub(crate) fn env_for(paths: &ConfigPaths) -> Env {
     let vars: Vec<(String, String)> = std::env::vars().collect();
     let mut refs: Vec<(&str, &str)> = vars
         .iter()
@@ -470,7 +470,7 @@ pub fn permission_decide(
 
 /// The agent's rules after making `action` on `resource` allowed (`on`) or denied, with as few rules
 /// as it takes. A switched-off group is `{group, *, deny}`. An MCP server is a rule on `mcp` with the
-/// resource `<server>/*`.
+/// resource that is the server's name, a slash, and an asterisk.
 #[uniffi::export]
 pub fn permission_set(
     global: Vec<PermissionRule>,

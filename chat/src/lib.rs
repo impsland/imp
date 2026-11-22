@@ -8,6 +8,7 @@
 //! - `chat_state` is the conversation (no input or output in it), `transcript` how tool calls read,
 //!   `slash` the `/` commands of a chat, `tui` the full-screen chat.
 //! - `troupe` is Imps messaging each other, `link` this computer as one of the person's devices.
+//! - `presets` are the services the first run offers (generated from `spec/presets`).
 //! - `qr` draws codes and pairs, `serve` runs The Den and The Hop.
 
 pub mod chat_state;
@@ -20,6 +21,8 @@ pub mod grammar;
 pub mod link;
 pub mod mcp_auth;
 pub mod mentions;
+#[path = "presets.generated.rs"]
+mod presets;
 pub mod project;
 pub mod qr;
 pub mod serve;

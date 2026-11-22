@@ -1,5 +1,7 @@
 # Commands in the chat
 
+The Mac and iPhone chats have the same custom commands: see [Skills and commands in the apps](/apps/skills-commands).
+
 Type `/` in the chat to see the commands. Every command is typed as a line that starts with `/`, and it takes
 effect with the next message. `//text` sends a message that starts with a single `/`. `/help` lists the
 commands, including your custom ones.

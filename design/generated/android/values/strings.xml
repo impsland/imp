@@ -139,12 +139,8 @@
   <string name="devices_node_label">%1$s, %2$s. Imps: %3$s</string>
   <string name="devices_node_label_empty">%1$s, %2$s</string>
   <string name="devices_node_this_mac_label">%1$s, this Mac</string>
-  <string name="devices_on_screen">On its screen</string>
   <string name="devices_place_body">On</string>
   <string name="devices_place_mind">Thinks on</string>
-  <string name="devices_plug_off">not plugged in</string>
-  <string name="devices_plug_on">plugged in</string>
-  <string name="devices_plug_title">What %1$s can use here</string>
   <string name="devices_reach_at">Reachable at</string>
   <string name="devices_reach_away">Away</string>
   <string name="devices_reach_direct">Direct, on the local network</string>
@@ -172,8 +168,13 @@
   <string name="devices_this_info">Link another device here. The dot shows whether The Hop lets devices find each other from anywhere.</string>
   <string name="devices_this_mac_badge">This Mac</string>
   <string name="devices_title">Devices</string>
+  <string name="devices_tool_off">Off</string>
+  <string name="devices_tool_on">On</string>
+  <string name="devices_tools_all_off">Turn all off</string>
+  <string name="devices_tools_all_on">Turn all on</string>
+  <string name="devices_tools_built_in">Built in</string>
   <string name="devices_tools_commands">Commands</string>
-  <string name="devices_tools_toggle">Show or hide the switches</string>
+  <string name="devices_tools_servers">Tool servers</string>
   <string name="devices_unknown_device">a device not linked with this Mac</string>
   <string name="devices_visitor_can_use">Its device can use here</string>
   <string name="devices_visitor_send_home">Send home</string>
@@ -795,6 +796,7 @@
   <string name="tool_set_traits">Change its look</string>
   <string name="tool_show_animation">View</string>
   <string name="tool_show_background">View background</string>
+  <string name="tool_use_skill">Use a skill</string>
   <string name="tool_verify">Check results</string>
   <string name="tools_add">Add</string>
   <string name="tools_collapse">Hide the tools in %1$s</string>

@@ -33,6 +33,10 @@ cd ~/projects/my-app                        # the folder Pip works in
 imp                                         # the same as imp chat
 ```
 
+You can skip all of that the first time: with no Imp yet, `imp` in a terminal asks where the model runs (online
+or on this computer), for its address and key, which model (from the service's own list when it gives one) and a
+name, saves them as the commands above do, and opens the chat. With several Imps it shows a list to choose from.
+
 `imp provider add` is a service, called by the short name you give it (`openrouter`). A model is written
 `provider/model`, with an optional `#variant` (`openai/gpt-6-luna#high`). `imp agent new` makes the Imp as a
 file in `~/.agents/agents`. In the server's arguments, `.` and `${workspaceFolder}` are the folder the chat
@@ -63,7 +67,7 @@ Run `imp --help` for every command and `imp COMMAND --help` for one. Lists and d
 
 | command | what it does |
 |---|---|
-| `imp chat [--imp NAME]` | The full-screen chat. `--plain` for the line chat, `--offline` to stay off the link |
+| `imp chat [--imp NAME]` | The full-screen chat. Without `--imp`, a terminal opens the only Imp, asks which one when there are several, and makes the first one step by step when there are none. `--plain` for the line chat, `--offline` to stay off the link |
 | `imp agent list [--all]`, `show NAME` | The agents of `~/.agents/agents`. The Imps are the `primary` and `all` ones |
 | `imp agent new NAME` | Make one. `--description`, `--model`, `--mode`, `--color` |
 | `imp agent set NAME KEY VALUE` | Change `description`, `mode`, `model`, `variant`, `color`, `steps`, `hidden`, `disabled` or `prompt` (`-` clears) |
@@ -333,8 +337,9 @@ a rule turns one off for an Imp. Add them with `imp mcp add` or `/mcp add`, or i
   `{env:NAME}`, so a secret stays in your environment.
 - A remote server that asks you to sign in (OAuth) is signed in once, in the Mac app or here, and the sign-in
   is kept in `auth.json` for both.
-- Imp speaks the Streamable HTTP transport: it posts each message to the address, accepts a JSON answer or an
-  event stream, and keeps the session the server starts.
+- Imp speaks the Streamable HTTP transport: it posts each message to the address and accepts a JSON answer or
+  an event stream. It speaks MCP `2026-07-28` (stateless) with servers that offer it, and otherwise the
+  `initialize` handshake (`2025-11-25` down to `2024-11-05`), keeping the session the server starts.
 - Tool ids look like `mcp.SERVER.TOOL` for MCP tools and `own.GROUP.TOOL` for the ones that come with `imp`.
   `/tools` lists them. A tool a rule denies (`mcp` with `server/tool`, or the group's action) is not offered,
   and a call to one is refused. `imp mcp disable NAME --agent IMP` writes the rule for one Imp.

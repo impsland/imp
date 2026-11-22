@@ -1,4 +1,5 @@
 import AppKit
+import ImpCore
 import ImpDesign
 import ImpKit
 import Observation
@@ -52,6 +53,11 @@ final class ImpModel {
     /// How it follows the cursor now: set by a follow trigger (not saved), else the base mode.
     var followMode = ImpPreferences.baseFollow.mode
     var followSpeed = ImpPreferences.baseFollow.speed
+
+    /// The custom commands (`/name`) the text box lists while a line starting with `/` is typed, read when a text box opens.
+    private(set) var slashCommands: [CommandEntry] = []
+    /// The line the person closed the list for (⎋): it stays closed until the line changes.
+    var slashClosedFor: String?
 
     @ObservationIgnored var onBubbleChange: (() -> Void)?
     @ObservationIgnored var onScaleChange: (() -> Void)?
@@ -321,6 +327,7 @@ final class ImpModel {
         guard bubble?.phase != .chat else { return }
         touch()
         beforeChat = bubble
+        refreshCommands()
         show(Bubble(phase: .chat), autoHide: false)
     }
 
@@ -532,6 +539,7 @@ final class ImpModel {
         if visit == nil { app.focus(self) }
         cancel()
         setActivity(.typing)
+        refreshCommands()
         show(Bubble(text: prefill, phase: .typing, prompt: prompt ?? String(localized: "Ask \(profile.name) anything…")), autoHide: false)
     }
 
@@ -546,7 +554,23 @@ final class ImpModel {
             b.attachmentNote = nil
             bubble = b
         }
-        start(.typed(t, media))
+        do {
+            guard let command = try commandRun(for: t) else { return start(.typed(t, media)) }
+            if command.imp !== self { dismissBubble() }
+            command.imp.start(.typed(t, media), command: command)
+        } catch {
+            complain(error.localizedDescription)
+        }
+    }
+
+    /// The commands a text box lists, read again from the `.agents` folder: a file may have been added since.
+    func refreshCommands() {
+        slashCommands = app.config?.agentLibrary.commands() ?? []
+    }
+
+    /// The commands the typed line starts to name (see `SlashSuggestions`), none once the person closed the list.
+    func slashSuggestions(for text: String) -> [CommandEntry] {
+        slashClosedFor == text ? [] : SlashSuggestions.matches(text, in: slashCommands)
     }
 
     /// What's typed in the bubble's text box so far: the bubble grows with it, line by line, so
@@ -819,7 +843,7 @@ final class ImpModel {
         start(queuedAnswers.removeFirst())
     }
 
-    private func start(_ source: Source, askedFrom origin: AskOrigin? = nil) {
+    private func start(_ source: Source, askedFrom origin: AskOrigin? = nil, command: CommandRun? = nil) {
         if visit != nil { return askHome(source) }
         // Asked by you while it can't think: refused at once, with what to do. (Another Imp's
         // message and a trigger still run, and fail with the same sentence in their own way.)
@@ -838,7 +862,7 @@ final class ImpModel {
         turnToken = token
         if case .answered(_, _, _, let depth) = source { turnDepth = depth } else { turnDepth = 0 }
         job = Task { [weak self] in
-            await self?.run(source, askedFrom: origin)
+            await self?.run(source, askedFrom: origin, command: command)
             self?.finishedTurn(token)
         }
     }
@@ -860,7 +884,7 @@ final class ImpModel {
         show(Bubble(title: shortcut.name, text: text, phase: .hint))
     }
 
-    private func run(_ source: Source, askedFrom origin: AskOrigin? = nil) async {
+    private func run(_ source: Source, askedFrom origin: AskOrigin? = nil, command: CommandRun? = nil) async {
         var title = ""
         /// What you asked, for the history (nil until there's something to answer).
         var ask: ChatTurn?
@@ -868,13 +892,16 @@ final class ImpModel {
         do {
             let turn: ChatMessage, heading: String
             switch source {
-            case .typed(let words, let media):
+            case .typed(let typed, let media):
+                // A custom command: its text with the command lines and files in it resolved (they may ask first).
+                var words = typed
+                if let command { words = try await prepared(command, typed: typed) }
                 let paths = media.map(save)
                 turn = Briefing.message(words, media: media, paths: paths)
-                heading = words.isEmpty ? Self.heading(for: media) : words
+                heading = typed.isEmpty ? Self.heading(for: media) : typed
                 // The history keeps the first picture where it always did, and the rest by path.
                 let firstPicture = media.firstIndex { $0.kind == .image }
-                ask = ChatTurn(request: words, via: .typed, picture: firstPicture.flatMap { paths[$0] },
+                ask = ChatTurn(request: typed, via: .typed, picture: firstPicture.flatMap { paths[$0] },
                                files: media.indices.filter { $0 != firstPicture }.compactMap { paths[$0] }.nilIfEmpty)
             case .spoken:
                 let words = try await listen()
@@ -911,7 +938,8 @@ final class ImpModel {
             work = ask.map { Work(ask: $0, heading: heading, title: title, received: received, peerChat: peerChat, continuing: continuing) }
             log.info("\(self.profile.name, privacy: .public) works on “\(title.isEmpty ? "a message" : title, privacy: .public)”")
             // No usable brain (a transferred Imp, say): say so and what to do, at once.
-            if let problem = app.assistant.problem(with: profile.brain, imp: profile.name) { throw problem }
+            let brain = command?.brain ?? profile.brain
+            if let problem = app.assistant.problem(with: brain, imp: profile.name) { throw problem }
             thinking(heading, captions: Captions.thinking)
             var messaging = true
             if case .message = source { messaging = false }       // answering an Imp: no messaging back and forth
@@ -921,12 +949,14 @@ final class ImpModel {
                 try app.assistant.tools(for: $0, own: ImpTools(host: OwnToolHost(app: app, imp: id, messaging: messaging, depth: turnDepth)))
             }
             if allowed != nil, app.assistant.toolsConnecting { addStep(.wakingUp) }
-            let (reply, exchange) = try await app.assistant.chat(messages(with: turn, peer: peerChat, continuing: continuing, askedFrom: origin), brain: profile.brain, tools: tools,
+            let (reply, exchange) = try await app.assistant.chat(messages(with: turn, peer: peerChat, continuing: continuing, askedFrom: origin, fresh: command?.subtask == true),
+                                                                 brain: brain, tools: tools,
                                                                  gate: tools == nil ? nil : gate(origin: origin), stream: true) { [weak self] event in
                 self?.progress(event, title: title)
             }
             try Task.checkCancellation()
-            record(ask, reply: reply, exchange: exchange, peerChat: peerChat, continuing: continuing)
+            // A subtask answers in a conversation of its own: shown, and not kept.
+            if command?.subtask != true { record(ask, reply: reply, exchange: exchange, peerChat: peerChat, continuing: continuing) }
             showAnswer(reply, title: title)
             finishReply(.success(reply))
         } catch is CancellationError {
@@ -938,7 +968,7 @@ final class ImpModel {
             startTyping(prompt: String(localized: "I didn't catch that. Type it?"))
         } catch {
             guard !Task.isCancelled else { return }
-            record(ask, reply: error.localizedDescription, failed: true, peerChat: peerChat, continuing: continuing)
+            if command?.subtask != true { record(ask, reply: error.localizedDescription, failed: true, peerChat: peerChat, continuing: continuing) }
             fail(title.isEmpty ? String(localized: "thinking") : title, error)
             finishReply(.failure(ToolArgumentError("\(profile.name) couldn't answer: \(error.localizedDescription)")))
         }
@@ -958,12 +988,14 @@ final class ImpModel {
 
     /// Its personality and instructions, the chat so far (as much as it's set to be sent), then
     /// the new turn. Its workspace is made first: the instructions send files there.
-    private func messages(with turn: ChatMessage, peer: ChatTurn.Sender? = nil, continuing: Bool = true, askedFrom origin: AskOrigin? = nil) -> [ChatMessage] {
+    private func messages(with turn: ChatMessage, peer: ChatTurn.Sender? = nil, continuing: Bool = true, askedFrom origin: AskOrigin? = nil,
+                          fresh: Bool = false) -> [ChatMessage] {
         let p = profile
         try? FileManager.default.createDirectory(at: p.workspace, withIntermediateDirectories: true)
-        let memory = peer.map { continuing ? history.memory(withPeer: $0.id) : ChatMemory() } ?? history.current.memory
+        let memory = fresh ? ChatMemory() : peer.map { continuing ? history.memory(withPeer: $0.id) : ChatMemory() } ?? history.current.memory
         let note = origin.flatMap { $0.trusted ? nil : "\n\n" + Briefing.untrusted(device: $0.name, home: DeviceLink.deviceName) } ?? ""
-        return memory.context(system: p.systemPrompt + note, turn: turn,
+        let skills = origin == nil && p.uses(.skills) ? app.config?.agentLibrary.skillsPrompt ?? "" : ""
+        return memory.context(system: p.systemPrompt + skills + note, turn: turn,
                                               exchanges: p.memoryExchanges, tools: p.remembersToolCalls)
     }
 
@@ -1115,7 +1147,7 @@ final class ImpModel {
 
     /// The permissions of this Imp's tool calls. Nobody can be asked when the Imp answers another device or is only
     /// visiting here: `ask` is `deny` there.
-    private func gate(origin: AskOrigin?) -> ToolGate? {
+    func gate(origin: AskOrigin?) -> ToolGate? {
         guard let config = app.config else { return nil }
         let agent = config.agentName(for: id) ?? SharedMapping.agentName(for: profile.name, avoiding: [])
         let away = origin != nil || visit != nil

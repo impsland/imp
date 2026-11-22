@@ -23,6 +23,7 @@ Which screens and states exist on which platform. Keep this table current.
 | [Devices screen](/ux/devices) (map, inspector, Link sheet) | Built | Earlier | Planned | Planned | Planned |
 | [First run](/ux/first-run) | To build | To build | Planned | Planned | Planned |
 | Status icon | Earlier | - | - | Planned | Planned |
+| [Skills and commands in the chat](/apps/skills-commands) (`/` list, skills in the system text, `use_skill`) | Built | Built | Planned | Planned | Planned |
 
 ## States
 
@@ -53,6 +54,7 @@ What the Mac has from this specification and the iPhone does not, to build:
 - **Scope of triggers and animations.** The phone's Imps keep their own triggers and have no shared set, so there is nothing to label or override. The Mac's model (`SettingScope`, `ImpPreferences.saveTrigger`) is shared code the phone can adopt.
 - **The server card.** The phone's Devices section still shows The Hop with its own menu and Check (`PhoneServerCards`), not the Mac's `ServerCard` layout. The choices and the check work the same.
 - **Link a device as one sheet.** Done on the first screen (its own sheet with the same cards). The Mac has no Devices section in Settings (it is the Devices screen). In Settings the phone still shows the code, Scan and Paste as cards of its Devices section.
+- **Rules for skills and commands.** The phone has no permission rules: a command's `` !`cmd` `` stops (there is no shell), its `@path` reads only inside the app's Documents folder, and `use_skill` always runs. The Mac asks as the rules say.
 - **Field actions.** The phone's fields do not use `FieldWell` yet. None of its fields has a button beside it.
 
 The first run uses the same model (`FirstRunModel`) and words, with Remote and Local, on both. The phone shows it on one screen, without step numbers.

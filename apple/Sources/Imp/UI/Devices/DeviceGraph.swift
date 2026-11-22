@@ -12,7 +12,8 @@ import SwiftUI
 /// network and dashed through the Hop. The Hop is not a node (it is a button in the screen's bar). A device known
 /// only through another is joined to the device that relays it by a thin dotted edge. An Imp that is away from its
 /// home has a tether to the home device, and an Imp that can talk to Imps on other devices has a talk edge to each:
-/// both are hidden until the Imp or its device is in focus. This Mac is in the middle and the other devices are on
+/// both are hidden until the Imp or its device is in focus. A talk line is drawn above the devices from chip to chip (`talkRoutes`),
+/// the canvas draws it itself. This Mac is in the middle and the other devices are on
 /// its two sides (each next to the shorter side, so the picture stays balanced). Where a device was dragged to is
 /// remembered by the caller and passed in as `moved`, so a refresh of the link never puts it back.
 enum DeviceGraph {
@@ -43,6 +44,11 @@ enum DeviceGraph {
         static let rowGap: CGFloat = 28
         /// How wide a line's clickable band is.
         static let interactionWidth: CGFloat = 26
+        /// The least room between two ports on the same side of a device, and how far from a corner the first may be.
+        static let dockGap: CGFloat = 12
+        static let dockInset: CGFloat = 10
+        /// How far down a device's side its channel attaches: level with the middle of its header, above every dock.
+        static let channelPort: CGFloat = header / 2
     }
 
     struct NodeData: Equatable, Sendable {
@@ -56,8 +62,28 @@ enum DeviceGraph {
         var away = false
         /// For an Imp that is away: the symbol of its home device, shown on its chip so where it lives is seen without lines.
         var homeSymbol: String?
+        /// For a device: the ports of the Imps' tethers on its sides, each in its Imp's colour.
+        var docks: [Dock] = []
         /// What a screen reader says about it.
         var label: String
+    }
+
+    /// The port of one Imp's tether on the side of a device: where the line leaves the device its body is on, or arrives
+    /// at its home. Each Imp has its own, so a line starts and ends at a point that is the Imp's alone.
+    struct Dock: Equatable, Sendable {
+        var id: String
+        var type: HandleType
+        var side: Position
+        /// How far along the side it is: from the top on a left or right side, from the left on a top or bottom side.
+        var offset: CGFloat
+    }
+
+    /// An Imp whose body is on one device and whose home is another, with where its chip is (on the canvas).
+    struct Tether: Equatable {
+        var imp: UUID
+        var body: String
+        var home: String
+        var chip: CGRect
     }
 
     struct EdgeData: Hashable, Sendable {
@@ -144,8 +170,14 @@ enum DeviceGraph {
 
         // Sizes, then columns: This Mac in the middle, the other devices on both sides.
         var boxes: [String: CGSize] = [:]
+        var arriving: [String: Int] = [:]
+        for node in shown {
+            for contact in map.residents(of: node.id) {
+                if let home = contact.home, home != node.id { arriving[home, default: 0] += 1 }
+            }
+        }
         for node in shown { boxes[node.id] = box(of: node, residents: map.residents(of: node.id).count,
-                                       longestName: map.residents(of: node.id).map(\.name.count).max() ?? 0) }
+                                       longestName: map.residents(of: node.id).map(\.name.count).max() ?? 0, arriving: arriving[node.id] ?? 0) }
         func height(_ node: DeviceMap.Node) -> CGFloat { boxes[node.id]?.height ?? 0 }
         func width(_ node: DeviceMap.Node) -> CGFloat { boxes[node.id]?.width ?? 0 }
         let thisMac = shown.first { $0.kind == .thisMac }
@@ -183,43 +215,53 @@ enum DeviceGraph {
         func frame(_ id: String) -> CGRect { CGRect(origin: places[id] ?? .zero, size: boxes[id] ?? .zero) }
         func hasChip(_ contact: UUID, on node: String) -> Bool { map.residents(of: node).contains { $0.id == contact } }
 
+        var slots: [String: [CGRect]] = [:]
+        for device in shown {
+            let residents = map.residents(of: device.id)
+            slots[device.id] = chipFrames(count: residents.count, in: boxes[device.id]?.width ?? 0, longestName: residents.map(\.name.count).max() ?? 0)
+        }
+        // An Imp away from its home is tied to it: the line leaves its device and arrives at its home by ports of its own.
+        var tethered: [(tether: Tether, contact: DeviceMap.Contact)] = []
+        for device in shown {
+            for (index, contact) in map.residents(of: device.id).enumerated() {
+                guard let home = contact.home, home != device.id, map.node(home) != nil, boxes[home] != nil, let slot = slots[device.id]?[index] else { continue }
+                let origin = frame(device.id).origin
+                tethered.append((Tether(imp: contact.id, body: device.id, home: home, chip: slot.offsetBy(dx: origin.x, dy: origin.y)), contact))
+            }
+        }
+        let docks = docks(for: tethered.map(\.tether), frames: Dictionary(uniqueKeysWithValues: shown.map { ($0.id, frame($0.id)) }))
+
         var nodes: [FlowNode] = []
         var edges: [LinkEdge] = []
-        for device in shown {
-            for contact in map.residents(of: device.id) {
-                guard let home = contact.home, home != device.id, map.node(home) != nil, boxes[home] != nil else { continue }
-                let side = tetherSide(from: frame(device.id), home: frame(home))
-                edges.append(LinkEdge(
-                    id: "tether/\(device.id)/\(contact.id.uuidString)", source: impNodeID(contact.id, in: device.id), target: home,
-                    sourceHandle: Port.tether(side), targetHandle: Port.tether(opposite(side)),
-                    type: .bezier, hidden: true, zIndex: 1, deletable: false, interactionWidth: Metrics.interactionWidth,
-                    data: EdgeData(kind: .tether(contact.id, in: device.id), look: .tether(hue: contact.hue), dimmed: false,
-                                   live: device.shownState == .connected, ends: [device.id, home],
-                                   label: words("devices.tether.label", contact.name, map.title(of: device.id), map.title(of: home)))))
-            }
+        for (tether, contact) in tethered {
+            let body = map.node(tether.body)
+            edges.append(LinkEdge(
+                id: "tether/\(tether.body)/\(contact.id.uuidString)", source: impNodeID(contact.id, in: tether.body), target: tether.home,
+                sourceHandle: Port.dock(.source, imp: tether.imp, body: tether.body), targetHandle: Port.dock(.target, imp: tether.imp, body: tether.body),
+                type: .bezier, hidden: true, zIndex: 1, deletable: false, interactionWidth: Metrics.interactionWidth,
+                data: EdgeData(kind: .tether(contact.id, in: tether.body), look: .tether(hue: contact.hue), dimmed: false,
+                               live: body?.shownState == .connected, ends: [tether.body, tether.home],
+                               label: words("devices.tether.label", contact.name, map.title(of: tether.body), map.title(of: tether.home)))))
         }
 
         for device in shown {
             guard let place = places[device.id], let size = boxes[device.id] else { continue }
             nodes.append(FlowNode(
                 id: device.id, position: XYPosition(x: place.x, y: place.y),
-                data: NodeData(role: .device(device), label: map.summary(of: device)), type: "group",
+                data: NodeData(role: .device(device), docks: docks[device.id] ?? [], label: map.summary(of: device)), type: "group",
                 width: size.width, height: size.height, draggable: true, selectable: false, connectable: false, deletable: false,
                 sourcePosition: .right, targetPosition: .left))
-            let residents = map.residents(of: device.id)
-            let slots = chipFrames(count: residents.count, in: size.width, longestName: residents.map(\.name.count).max() ?? 0)
-            for (index, contact) in residents.enumerated() {
+            for (index, contact) in map.residents(of: device.id).enumerated() {
                 let ours = map.imp(contact.id) != nil
-                let side = contact.home.flatMap { $0 != device.id && boxes[$0] != nil ? tetherSide(from: frame(device.id), home: frame($0)) : nil }
+                let slot = slots[device.id]?[index] ?? .zero
                 nodes.append(FlowNode(
                     id: impNodeID(contact.id, in: device.id),
-                    position: XYPosition(x: slots[index].minX, y: slots[index].minY),
+                    position: XYPosition(x: slot.minX, y: slot.minY),
                     data: NodeData(role: .imp(contact, ours: ours), away: contact.home != contact.location,
                                    homeSymbol: contact.home != contact.location ? (contact.home.flatMap { map.node($0)?.symbol } ?? "house") : nil,
                                    label: words(ours ? "devices.chip.label_ours" : "devices.chip.label_visitor", contact.name, map.title(of: device.id))),
-                    parentId: device.id, width: slots[index].width, height: slots[index].height,
-                    draggable: false, selectable: false, connectable: false, deletable: false,
-                    sourcePosition: side ?? .bottom))
+                    parentId: device.id, width: slot.width, height: slot.height,
+                    draggable: false, selectable: false, connectable: false, deletable: false))
             }
         }
 
@@ -251,12 +293,9 @@ enum DeviceGraph {
         for entry in map.imps {
             for contact in entry.talksTo where contact.location != entry.location && boxes[contact.location] != nil
                 && boxes[entry.location] != nil && hasChip(contact.id, on: contact.location) && hasChip(entry.id, on: entry.location) {
-                let from = frame(entry.location), to = frame(contact.location)
-                let out = facing(from: from, to: to), into = facing(from: to, to: from)
                 edges.append(LinkEdge(
                     id: "talk/\(entry.id.uuidString)/\(contact.id.uuidString)",
-                    source: impNodeID(entry.id, in: entry.location), target: impNodeID(contact.id, in: contact.location),
-                    sourceHandle: Port.talk(out, .source), targetHandle: Port.talk(into, .target), type: .bezier,
+                    source: impNodeID(entry.id, in: entry.location), target: impNodeID(contact.id, in: contact.location), type: .bezier,
                     hidden: true, zIndex: 2, deletable: false, focusable: false, interactionWidth: Metrics.interactionWidth,
                     data: EdgeData(kind: .talk(entry.id, contact.id), look: .talk(hue: entry.hue), dimmed: false, live: false,
                                    ends: [entry.location, contact.location],
@@ -268,15 +307,15 @@ enum DeviceGraph {
 
     // MARK: Handles
 
-    /// The points where lines attach. A channel runs between the sides of devices that face each other, so every
-    /// side is a point for both ends. A tether leaves the side of its Imp's chip that faces its home and arrives at the
-    /// facing side of the home, so it runs clear of the channels and never under a card. A talk line leaves the side of a chip that faces its device.
+    /// The points where lines attach. A channel runs between the sides of devices that face each other, level with the
+    /// header, so every side is a point for both ends. A tether leaves the side of its device that faces its home and
+    /// arrives at the facing side of the home, each end at a dock of its own Imp. A talk line has no handles: it is drawn
+    /// above the devices, from chip to chip (`talkRoutes`).
     enum Port {
         static let sides: [Position] = [.left, .right, .top, .bottom]
         static func line(_ side: Position, _ type: HandleType) -> String { "line-\(name(type))-\(side.rawValue)" }
-        static func talk(_ side: Position, _ type: HandleType) -> String { "talk-\(name(type))-\(side.rawValue)" }
-        static func tether(_ side: Position) -> String { "tether-\(side.rawValue)" }
-        static let tetherSides: [Position] = sides
+        /// The dock of `imp`'s tether on the device `body` it is on: it leaves there and arrives at its home's.
+        static func dock(_ type: HandleType, imp: UUID, body: String) -> String { "dock-\(name(type))-\(body)-\(imp.uuidString)" }
         private static func name(_ type: HandleType) -> String { type == .source ? "source" : "target" }
     }
 
@@ -287,10 +326,6 @@ enum DeviceGraph {
         return b.midY < a.midY ? .top : .bottom
     }
 
-    /// Which side of the chip a tether leaves by: the one facing its home, so it runs straight across the gap to the
-    /// home's facing side and never loops under the cards.
-    static func tetherSide(from device: CGRect, home: CGRect) -> Position { facing(from: device, to: home) }
-
     /// The side across from `side`.
     static func opposite(_ side: Position) -> Position {
         switch side {
@@ -299,6 +334,147 @@ enum DeviceGraph {
         case .top: .bottom
         case .bottom: .top
         }
+    }
+
+    // MARK: Talk lines
+
+    /// A talk line as it is drawn: from a port on one chip to a port on another, in canvas units.
+    struct Route: Equatable {
+        var edge: String
+        var data: EdgeData
+        var from: CGPoint
+        var fromSide: Position
+        var to: CGPoint
+        var toSide: Position
+    }
+
+    /// The side of the chip `frame` that a line to `other` uses: the one that faces it, unless another chip of its
+    /// device (`among`) is in the way there, then the top or the bottom, whichever has no chip next to it.
+    static func openSide(of frame: CGRect, toward other: CGRect, among siblings: [CGRect]) -> Position {
+        let side = facing(from: frame, to: other)
+        guard side == .left || side == .right else { return side }
+        let row = siblings.filter { $0 != frame && $0.minY < frame.maxY && $0.maxY > frame.minY }
+        let blocked = row.contains { side == .right ? $0.minX >= frame.maxX : $0.maxX <= frame.minX }
+        guard blocked else { return side }
+        return siblings.contains { $0.maxY <= frame.minY && $0.minX < frame.maxX && $0.maxX > frame.minX } ? .bottom : .top
+    }
+
+    /// The frames of every Imp's chip on the canvas, by node id.
+    static func chipFrames(in graph: Graph) -> [String: CGRect] {
+        let origins = Dictionary(uniqueKeysWithValues: graph.nodes.filter { $0.parentId == nil }.map { ($0.id, CGPoint(x: $0.position.x, y: $0.position.y)) })
+        var frames: [String: CGRect] = [:]
+        for node in graph.nodes {
+            guard case .imp = node.data.role, let parent = node.parentId, let origin = origins[parent] else { continue }
+            frames[node.id] = CGRect(x: origin.x + node.position.x, y: origin.y + node.position.y, width: node.width ?? 0, height: node.height ?? 0)
+        }
+        return frames
+    }
+
+    /// The talk lines that are shown, each from the side of its chip that faces the other chip to the side of the other
+    /// that faces it. The canvas draws them above the devices, because a line under a card would be lost in it. A
+    /// chip's lines on one side each have a port of their own, spread over the side in the order of the chips at
+    /// their other ends, so they fan out the way the chips are and do not cross.
+    static func talkRoutes(in graph: Graph) -> [Route] {
+        let frames = chipFrames(in: graph)
+        struct End: Hashable { var chip: String; var side: Position }
+        struct Use { var edge: String; var source: Bool; var other: CGRect }
+        let parents = Dictionary(uniqueKeysWithValues: graph.nodes.compactMap { node in node.parentId.map { (node.id, $0) } })
+        func siblings(of chip: String) -> [CGRect] { frames.filter { parents[$0.key] == parents[chip] }.map(\.value) }
+        var uses: [End: [Use]] = [:]
+        let lines = graph.edges.filter { $0.data?.isTalk == true && !$0.hidden }
+        for edge in lines {
+            guard let a = frames[edge.source], let b = frames[edge.target] else { continue }
+            uses[End(chip: edge.source, side: openSide(of: a, toward: b, among: siblings(of: edge.source))), default: []].append(Use(edge: edge.id, source: true, other: b))
+            uses[End(chip: edge.target, side: openSide(of: b, toward: a, among: siblings(of: edge.target))), default: []].append(Use(edge: edge.id, source: false, other: a))
+        }
+        var points: [String: (from: (CGPoint, Position)?, to: (CGPoint, Position)?)] = [:]
+        for (end, group) in uses {
+            guard let frame = frames[end.chip] else { continue }
+            let ordered = group.sorted { (along(CGPoint(x: $0.other.midX, y: $0.other.midY), end.side), $0.edge) < (along(CGPoint(x: $1.other.midX, y: $1.other.midY), end.side), $1.edge) }
+            for (index, use) in ordered.enumerated() {
+                let share = CGFloat(index + 1) / CGFloat(ordered.count + 1)
+                let point: CGPoint
+                switch end.side {
+                case .left: point = CGPoint(x: frame.minX, y: frame.minY + frame.height * share)
+                case .right: point = CGPoint(x: frame.maxX, y: frame.minY + frame.height * share)
+                case .top: point = CGPoint(x: frame.minX + frame.width * share, y: frame.minY)
+                case .bottom: point = CGPoint(x: frame.minX + frame.width * share, y: frame.maxY)
+                }
+                if use.source { points[use.edge, default: (nil, nil)].from = (point, end.side) } else { points[use.edge, default: (nil, nil)].to = (point, end.side) }
+            }
+        }
+        return lines.compactMap { edge in
+            guard let data = edge.data, let from = points[edge.id]?.from, let to = points[edge.id]?.to else { return nil }
+            return Route(edge: edge.id, data: data, from: from.0, fromSide: from.1, to: to.0, toSide: to.1)
+        }
+    }
+
+    // MARK: Docks
+
+    /// Where each Imp's tether leaves and arrives, by device. Every tether has one dock on the side of its device that
+    /// faces its home and one on the facing side of its home, in order of where its chip is, so the lines run side by
+    /// side and never cross. Docks on one side keep apart (`spread`).
+    static func docks(for tethers: [Tether], frames: [String: CGRect]) -> [String: [Dock]] {
+        // Top to bottom, then left to right: the one order both ends share.
+        let ordered = tethers.sorted {
+            ($0.chip.midY, $0.chip.midX, $0.imp.uuidString, $0.body) < ($1.chip.midY, $1.chip.midX, $1.imp.uuidString, $1.body)
+        }
+        struct End: Hashable { var device: String; var side: Position }
+        var groups: [End: [(tether: Tether, type: HandleType, wanted: CGFloat)]] = [:]
+        for tether in ordered {
+            guard let body = frames[tether.body], let home = frames[tether.home] else { continue }
+            let side = facing(from: body, to: home)
+            let point = CGPoint(x: tether.chip.midX, y: tether.chip.midY)
+            groups[End(device: tether.body, side: side), default: []].append((tether, .source, along(point, side) - along(body.origin, side)))
+            groups[End(device: tether.home, side: opposite(side)), default: []].append((tether, .target, along(point, side) - along(home.origin, side)))
+        }
+        var docks: [String: [Dock]] = [:]
+        for (end, group) in groups {
+            guard let frame = frames[end.device] else { continue }
+            let offsets = spread(group.map(\.wanted), gap: Metrics.dockGap, in: dockRange(end.side, of: frame.size))
+            for (entry, offset) in zip(group, offsets) {
+                docks[end.device, default: []].append(Dock(id: Port.dock(entry.type, imp: entry.tether.imp, body: entry.tether.body),
+                                                           type: entry.type, side: end.side, offset: offset))
+            }
+        }
+        return docks.mapValues { $0.sorted { ($0.side.rawValue, $0.offset, $0.id) < ($1.side.rawValue, $1.offset, $1.id) } }
+    }
+
+    /// The coordinate of `point` along `side`: down it on a left or right side, across it on a top or bottom one.
+    private static func along(_ point: CGPoint, _ side: Position) -> CGFloat {
+        side == .left || side == .right ? point.y : point.x
+    }
+
+    /// Where on `side` of a device of `size` a dock may be: clear of the corners, and on a left or right side below
+    /// the channel's port.
+    static func dockRange(_ side: Position, of size: CGSize) -> ClosedRange<CGFloat> {
+        let vertical = side == .left || side == .right
+        let low = vertical ? Metrics.channelPort + Metrics.dockGap : Metrics.dockInset
+        let high = (vertical ? size.height : size.width) - Metrics.dockInset
+        return low...max(low, high)
+    }
+
+    /// Places that are as near as they can be to what is `wanted`, in `range` and at least `gap` apart, in the order
+    /// of what is wanted. When they cannot all keep `gap` they share the room evenly. The result is in the order of `wanted`.
+    static func spread(_ wanted: [CGFloat], gap: CGFloat, in range: ClosedRange<CGFloat>) -> [CGFloat] {
+        guard !wanted.isEmpty else { return [] }
+        let order = wanted.indices.sorted { (wanted[$0], $0) < (wanted[$1], $1) }
+        let step = order.count > 1 ? min(gap, (range.upperBound - range.lowerBound) / CGFloat(order.count - 1)) : 0
+        var placed: [CGFloat] = []
+        var previous = -CGFloat.infinity
+        for index in order {
+            previous = max(min(max(wanted[index], range.lowerBound), range.upperBound), previous + step)
+            placed.append(previous)
+        }
+        // What was pushed past the end comes back, the ones before it with it.
+        var next = range.upperBound
+        for slot in placed.indices.reversed() {
+            placed[slot] = min(placed[slot], next)
+            next = placed[slot] - step
+        }
+        var result = [CGFloat](repeating: 0, count: wanted.count)
+        for (slot, index) in order.enumerated() { result[index] = placed[slot] }
+        return result
     }
 
     // MARK: Geometry
@@ -334,15 +510,17 @@ enum DeviceGraph {
     }
 
     /// A device's size: as wide as its name needs and as its Imps need at their narrowest (at most three across), and
-    /// no wider than `maximumWidth`. A single Imp fills the width of its device.
-    static func box(of node: DeviceMap.Node, residents count: Int, longestName: Int = 0) -> CGSize {
+    /// no wider than `maximumWidth`. A single Imp fills the width of its device. It is tall enough for the docks of the
+    /// `arriving` tethers of Imps that are away from it.
+    static func box(of node: DeviceMap.Node, residents count: Int, longestName: Int = 0, arriving: Int = 0) -> CGSize {
         let across = CGFloat(min(Metrics.maxChipColumns, count))
         let imps = count > 0 ? 2 * Metrics.padding + across * chipWidth(longestName) + (across - 1) * Metrics.chipGap : 0
         let name = Metrics.headerChrome + CGFloat(node.title.count) * Metrics.titleCharacter
         let width = min(Metrics.maximumWidth, max(Metrics.minimumWidth, name, imps))
-        guard count > 0 else { return CGSize(width: width, height: Metrics.header) }
+        let docks = Metrics.channelPort + Metrics.dockGap + CGFloat(max(0, arriving - 1)) * Metrics.dockGap + Metrics.dockInset
+        guard count > 0 else { return CGSize(width: width, height: max(Metrics.header, docks)) }
         let rows = CGFloat(chipRows(count, in: width, longestName: longestName).count)
-        return CGSize(width: width, height: Metrics.header + rows * Metrics.chipHeight + (rows - 1) * Metrics.chipGap + Metrics.padding)
+        return CGSize(width: width, height: max(docks, Metrics.header + rows * Metrics.chipHeight + (rows - 1) * Metrics.chipGap + Metrics.padding))
     }
 }
 

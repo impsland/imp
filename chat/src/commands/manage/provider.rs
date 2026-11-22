@@ -54,8 +54,13 @@ pub fn list(settings: &Settings) -> Result<Reply> {
     ))
 }
 
+/// Whether `url` is an address a provider can have: it starts with `http://` or `https://`.
+pub(crate) fn is_url(url: &str) -> bool {
+    url.starts_with("http://") || url.starts_with("https://")
+}
+
 fn check_url(url: &str) -> Result<()> {
-    if url.starts_with("http://") || url.starts_with("https://") {
+    if is_url(url) {
         Ok(())
     } else {
         Err(CliError(format!(

@@ -46,7 +46,7 @@ public struct LocalServerFinder: Sendable {
     public func probe(name: String, baseURL: String) async -> LocalServer? {
         guard let url = URL(string: baseURL)?.appendingPathComponent("models"),
               let body = try? await fetch(url, timeout), let text = String(data: body, encoding: .utf8) else { return nil }
-        let models = ImpCore.localBrainParseModels(body: text)
+        let models = ImpCore.parseModelIds(body: text)
         return models.isEmpty ? nil : LocalServer(name: name, baseURL: baseURL, models: models)
     }
 

@@ -342,18 +342,3 @@ pub fn mcp_auth_header(auth: McpAuth) -> crate::McpHeader {
     let (name, value) = auth::McpAuth::from(auth).header();
     crate::McpHeader { name, value }
 }
-
-/// The version to speak after `initialize`. Fails with a sentence when the server picked a revision
-/// Imp does not speak: the app must disconnect and show it.
-#[uniffi::export]
-pub fn mcp_checked_version(
-    initialize_result_json: String,
-) -> Result<String, crate::McpProtocolError> {
-    let v: serde_json::Value = serde_json::from_str(&initialize_result_json).map_err(|_| {
-        crate::McpProtocolError::Failed {
-            message: "the MCP server sent something that is not JSON".into(),
-        }
-    })?;
-    imp_engine::mcp::protocol::checked_version(&v)
-        .map_err(|message| crate::McpProtocolError::Failed { message })
-}

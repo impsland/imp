@@ -22,8 +22,13 @@ public final class HTTPTransport: MCPTransport, @unchecked Sendable {
 
     public func start() async throws {}
 
-    public func initialized(protocolVersion: String) {
-        lock.withLock { self.protocolVersion = protocolVersion }
+    public var offersStateless: Bool { true }
+
+    public func speak(protocolVersion: String?) {
+        lock.withLock {
+            self.protocolVersion = protocolVersion
+            if protocolVersion == nil { sessionID = nil }
+        }
     }
 
     /// A header the person set themselves wins over a stored sign-in.
@@ -44,7 +49,12 @@ public final class HTTPTransport: MCPTransport, @unchecked Sendable {
 
     public func send(_ message: String) async throws {
         let (session, version) = known
-        let protocolHeaders = mcpPostHeaders(session: session, protocolVersion: version)
+        let protocolHeaders: [McpHeader]
+        do {
+            protocolHeaders = try mcpPostHeaders(message: message, session: session, protocolVersion: version)
+        } catch McpProtocolError.Failed(let text) {
+            throw MCPError.protocolError(text)
+        }
         var (data, response) = try await post(message, protocolHeaders)
         if let http = response as? HTTPURLResponse, http.statusCode == 401, !setsAuthorization,
            let authorizer, await authorizer.refreshStored() {

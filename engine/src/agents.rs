@@ -5,9 +5,14 @@
 //! Finding the folders and reading the files is `config::load`. The vectors are
 //! `spec/fixtures/agents.json`.
 
+use crate::agent::{BoxFuture, HostTool, ToolHost};
 use crate::chat::ToolSpec;
+use crate::config::Sourced;
 use crate::config::doc::{Skill, split_front_matter};
-use serde_json::json;
+use crate::tools::ToolEntry;
+use serde_json::{Value, json};
+use std::collections::BTreeMap;
+use std::path::{Path, PathBuf};
 
 /// The most bytes of `AGENTS.md` text put in the system text, all files together.
 pub const MOST_INSTRUCTIONS: usize = 32 * 1024;
@@ -84,6 +89,114 @@ pub fn skill_text(name: &str, folder: &str, text: &str, files: &[String]) -> Str
         }
     }
     out
+}
+
+/// The skills as a tool: the `use_skill` tool, answered from the skills' files.
+pub struct SkillHost {
+    skills: Vec<(String, PathBuf)>,
+}
+
+impl SkillHost {
+    /// None when there are no skills (then there is no tool).
+    pub fn new(skills: &BTreeMap<String, Sourced<Skill>>) -> Option<Self> {
+        (!skills.is_empty()).then(|| Self {
+            skills: skills
+                .values()
+                .map(|s| (s.value.name.clone(), s.path.clone()))
+                .collect(),
+        })
+    }
+
+    /// The tool with the skills' names, for a host that makes its own tool list.
+    pub fn spec(&self) -> ToolSpec {
+        let names: Vec<String> = self.skills.iter().map(|(n, _)| n.clone()).collect();
+        skill_tool(&names)
+    }
+
+    /// The text the tool returns for a skill.
+    pub fn read(&self, name: &str) -> String {
+        let Some((_, path)) = self.skills.iter().find(|(n, _)| n == name) else {
+            let names: Vec<&str> = self.skills.iter().map(|(n, _)| n.as_str()).collect();
+            return format!(
+                "Error: there is no skill {name}. The skills are: {}.",
+                names.join(", ")
+            );
+        };
+        let text = match std::fs::read_to_string(path) {
+            Ok(t) => t,
+            Err(e) => return format!("Error: could not read {}: {e}", path.display()),
+        };
+        let folder = path.parent().unwrap_or(Path::new("."));
+        skill_text(
+            name,
+            &folder.display().to_string(),
+            &text,
+            &skill_files(folder),
+        )
+    }
+
+    /// The answer to a call of the tool with these JSON arguments.
+    pub fn answer(&self, arguments: &str) -> String {
+        let args: Value = serde_json::from_str(arguments).unwrap_or(Value::Null);
+        match args.get("name").and_then(Value::as_str) {
+            Some(skill) => self.read(skill),
+            None => format!("Error: {SKILL_TOOL} needs the `name` of a skill."),
+        }
+    }
+}
+
+fn sorted_entries(dir: &Path) -> Vec<PathBuf> {
+    let mut all: Vec<PathBuf> = std::fs::read_dir(dir)
+        .map(|rd| rd.filter_map(|e| e.ok().map(|e| e.path())).collect())
+        .unwrap_or_default();
+    all.sort();
+    all
+}
+
+/// The files in a skill's folder (not `SKILL.md`), a few levels down and no more than 50.
+fn skill_files(folder: &Path) -> Vec<String> {
+    let mut out = Vec::new();
+    let mut stack = vec![folder.to_path_buf()];
+    while let Some(dir) = stack.pop() {
+        for path in sorted_entries(&dir) {
+            if out.len() >= 50 {
+                return out;
+            }
+            let hidden = path
+                .file_name()
+                .is_some_and(|n| n.to_string_lossy().starts_with('.'));
+            if hidden {
+                continue;
+            }
+            if path.is_dir() {
+                if path
+                    .strip_prefix(folder)
+                    .map_or(0, |r| r.components().count())
+                    < 3
+                {
+                    stack.push(path);
+                }
+            } else if let Ok(rel) = path.strip_prefix(folder)
+                && rel != Path::new("SKILL.md")
+            {
+                out.push(rel.display().to_string());
+            }
+        }
+    }
+    out
+}
+
+impl ToolHost for SkillHost {
+    fn tools(&self) -> Vec<HostTool> {
+        vec![HostTool {
+            entry: Some(ToolEntry::own(SKILL_GROUP, SKILL_TOOL)),
+            spec: self.spec(),
+        }]
+    }
+
+    fn call<'a>(&'a self, name: &'a str, arguments: &'a str) -> BoxFuture<'a, Option<String>> {
+        Box::pin(async move { (name == SKILL_TOOL).then(|| self.answer(arguments)) })
+    }
 }
 
 // The system text.
@@ -246,6 +359,57 @@ mod tests {
             skill_tool(&["notes".into()]).parameters["properties"]["name"]["enum"],
             json!(["notes"])
         );
+    }
+
+    #[test]
+    fn the_skill_tool_reads_a_skill_and_its_files() {
+        let dir = tempfile::tempdir().unwrap();
+        let folder = dir.path().join("notes");
+        std::fs::create_dir_all(folder.join("ref")).unwrap();
+        std::fs::write(
+            folder.join("SKILL.md"),
+            "---\nname: notes\ndescription: Take notes\n---\nStep one.",
+        )
+        .unwrap();
+        std::fs::write(folder.join("ref/t.md"), "x").unwrap();
+        std::fs::write(folder.join(".hidden"), "x").unwrap();
+        let skill = Skill::parse(
+            "notes",
+            "---\nname: notes\ndescription: Take notes\n---\nStep one.",
+        )
+        .unwrap();
+        let mut all = BTreeMap::new();
+        all.insert(
+            "notes".to_string(),
+            Sourced {
+                value: skill,
+                path: folder.join("SKILL.md"),
+                scope: crate::config::Scope::Global,
+            },
+        );
+        assert!(SkillHost::new(&BTreeMap::new()).is_none());
+        let host = SkillHost::new(&all).unwrap();
+        let text = host.answer(r#"{"name":"notes"}"#);
+        assert!(
+            text.contains("Step one.") && text.contains("- ref/t.md"),
+            "{text}"
+        );
+        assert!(
+            !text.contains(".hidden") && !text.contains("name: notes"),
+            "{text}"
+        );
+        assert!(
+            host.answer(r#"{"name":"nope"}"#)
+                .contains("The skills are: notes.")
+        );
+        assert!(host.answer("{}").contains("needs the `name`"));
+        assert_eq!(host.spec().name, SKILL_TOOL);
+    }
+
+    #[test]
+    fn the_skill_tool_is_a_built_in_tool() {
+        let tool = crate::tools::BuiltInTool::named(SKILL_TOOL).unwrap();
+        assert_eq!(tool.group(), SKILL_GROUP);
     }
 
     #[test]

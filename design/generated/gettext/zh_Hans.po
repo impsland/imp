@@ -667,11 +667,6 @@ msgctxt "devices.node.this_mac_label"
 msgid "{name}, this Mac"
 msgstr "{name}，这台 Mac"
 
-#. Title of the chips of the Imps on a device's screen.
-msgctxt "devices.on_screen"
-msgid "On its screen"
-msgstr "在它的屏幕上"
-
 #. Where an Imp's body is, as a tag on a device row.
 msgctxt "devices.place.body"
 msgid "On"
@@ -681,21 +676,6 @@ msgstr "在"
 msgctxt "devices.place.mind"
 msgid "Thinks on"
 msgstr "思考于"
-
-#. Spoken value of a plug that is not plugged in.
-msgctxt "devices.plug.off"
-msgid "not plugged in"
-msgstr "未插上"
-
-#. Spoken value of a plug that is plugged in.
-msgctxt "devices.plug.on"
-msgid "plugged in"
-msgstr "已插上"
-
-#. Title of the card of plugs: what a linked device can use of this Mac's Imps.
-msgctxt "devices.plug.title"
-msgid "What {name} can use here"
-msgstr "{name} 在这里可以用什么"
 
 #. Title of the addresses this Mac can be reached at.
 msgctxt "devices.reach.at"
@@ -832,15 +812,40 @@ msgctxt "devices.title"
 msgid "Devices"
 msgstr "设备"
 
+#. Spoken state of a tool chip that is switched off.
+msgctxt "devices.tool.off"
+msgid "Off"
+msgstr "关"
+
+#. Spoken state of a tool chip that is switched on.
+msgctxt "devices.tool.on"
+msgid "On"
+msgstr "开"
+
+#. Tooltip and spoken label of the button that switches every tool of a group off.
+msgctxt "devices.tools.all_off"
+msgid "Turn all off"
+msgstr "全部关闭"
+
+#. Tooltip and spoken label of the button that switches every tool of a group on.
+msgctxt "devices.tools.all_on"
+msgid "Turn all on"
+msgstr "全部开启"
+
+#. Heading of the group of an Imp's built-in tools in a device's tools grid.
+msgctxt "devices.tools.built_in"
+msgid "Built in"
+msgstr "内置"
+
 #. Name of the tool that runs commands.
 msgctxt "devices.tools.commands"
 msgid "Commands"
 msgstr "命令"
 
-#. Tooltip of the button that opens or closes a list of tool switches.
-msgctxt "devices.tools.toggle"
-msgid "Show or hide the switches"
-msgstr "显示或隐藏开关"
+#. Heading of the group of tools that come from MCP servers in a device's tools grid.
+msgctxt "devices.tools.servers"
+msgid "Tool servers"
+msgstr "工具服务器"
 
 #. A device this Mac is not linked with.
 msgctxt "devices.unknown_device"
@@ -3890,6 +3895,11 @@ msgstr "查看"
 msgctxt "tool.show_background"
 msgid "View background"
 msgstr "查看背景"
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.use_skill"
+msgid "Use a skill"
+msgstr "使用技能"
 
 #. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
 msgctxt "tool.verify"

@@ -2,7 +2,9 @@
 //!
 //! The stdio transport starts the server as a child process and kills it when the client is dropped.
 //! The HTTP transport posts every message to one address and reads either a JSON reply or an event
-//! stream (see `http`).
+//! stream (see `http`). Over HTTP the client asks for the stateless revision first and does the
+//! `initialize` handshake only when the server does not speak it. A child process always gets the
+//! handshake: a server that does not know `server/discover` may never answer it.
 
 use super::http;
 use super::protocol::{self, Incoming, McpTool};
@@ -124,6 +126,8 @@ pub struct McpClient {
     timeout: Duration,
     /// Who signs in when the server demands it, and the server's address.
     sign_in: Option<(Rc<dyn McpSignIn>, String)>,
+    /// The revision the server and the client speak, set once `start` agreed on it.
+    version: String,
 }
 
 impl McpClient {
@@ -164,8 +168,8 @@ impl McpClient {
         .await
     }
 
-    /// Connects to a server over Streamable HTTP and does the `initialize` handshake. The values
-    /// of `headers` are sent with every request and never shown.
+    /// Connects to a server over Streamable HTTP, statelessly when it can, otherwise with the
+    /// `initialize` handshake. The values of `headers` are sent with every request and never shown.
     pub async fn connect_http(
         name: &str,
         url: &str,
@@ -216,31 +220,49 @@ impl McpClient {
         timeout: Duration,
         sign_in: Option<(Rc<dyn McpSignIn>, String)>,
     ) -> Result<Self, McpError> {
-        let client = Self {
+        let mut client = Self {
             name: name.to_string(),
             link,
             next_id: AtomicU64::new(1),
             timeout,
             sign_in,
+            version: String::new(),
         };
-        let id = client.next_id();
-        let result = client
-            .exchange(id, &protocol::initialize_request(id))
-            .await?;
-        let version = protocol::checked_version(&result).map_err(McpError::Protocol)?;
-        if let Link::Http(http) = &client.link {
-            http.set_protocol(&version);
-        }
-        client.notify(&protocol::initialized_notification()).await?;
+        client.version = client.agree_on_version().await?;
         Ok(client)
+    }
+
+    /// Finds the revision to speak: the stateless one when an HTTP server lists it in its answer to
+    /// `server/discover`, otherwise the one the `initialize` handshake agrees on. A server that refuses
+    /// discovery in any way gets the handshake, unless it wants a sign-in or cannot be reached.
+    async fn agree_on_version(&self) -> Result<String, McpError> {
+        if let Link::Http(http) = &self.link {
+            http.speak(protocol::STATELESS_VERSION);
+            let id = self.next_id();
+            match self.exchange(id, &protocol::discover_request(id)).await {
+                Ok(result) if protocol::speaks_stateless(&result) => {
+                    return Ok(protocol::STATELESS_VERSION.to_string());
+                }
+                Err(e @ (McpError::Unauthorized { .. } | McpError::Network(_))) => return Err(e),
+                _ => http.reset(),
+            }
+        }
+        let id = self.next_id();
+        let result = self.exchange(id, &protocol::initialize_request(id)).await?;
+        let version = protocol::checked_version(&result).map_err(McpError::Protocol)?;
+        if let Link::Http(http) = &self.link {
+            http.speak(&version);
+        }
+        self.notify(&protocol::initialized_notification()).await?;
+        Ok(version)
     }
 
     pub fn name(&self) -> &str {
         &self.name
     }
 
-    /// Ends the session of an HTTP server. A server started as a child process stops when the
-    /// client is dropped.
+    /// Ends the session of an HTTP server that started one. A server started as a child process
+    /// stops when the client is dropped.
     pub async fn close(&self) -> Result<(), McpError> {
         match &self.link {
             Link::Stdio { .. } => Ok(()),
@@ -342,7 +364,7 @@ impl McpClient {
         let mut cursor: Option<String> = None;
         loop {
             let id = self.next_id();
-            let message = protocol::tools_list_request(id, cursor.as_deref());
+            let message = protocol::tools_list_request(id, cursor.as_deref(), &self.version);
             let page = protocol::tools_page(&self.exchange(id, &message).await?, &seen);
             tools.extend(page.tools);
             let Some(next) = page.next_cursor else {
@@ -357,7 +379,7 @@ impl McpClient {
     /// with "Error:", so the model can read it. Failures of the server itself are errors.
     pub async fn call_tool(&self, name: &str, arguments: Value) -> Result<String, McpError> {
         let id = self.next_id();
-        let message = protocol::tools_call_request(id, name, arguments);
+        let message = protocol::tools_call_request(id, name, arguments, &self.version);
         let result = self.exchange(id, &message).await?;
         Ok(protocol::tool_result_text(&result))
     }

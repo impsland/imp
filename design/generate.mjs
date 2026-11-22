@@ -5,7 +5,7 @@
  *   design/tokens.json             colours, spacing, radii, type, sizes, motion and behaviour numbers
  *   design/components.json         the Pebble components, as token references
  *   design/strings/*.json          every word a user reads, one stable key each, in en, es and zh-Hans
- *   spec/presets/*.json            the service presets, compiled into the Apple apps
+ *   spec/presets/*.json            the service presets, compiled into the Apple apps and the terminal app
  *
  * It writes Swift for the Apple apps, CSS for the browser extension, Kotlin and XML for Android,
  * XAML, C# and .resw for Windows, CSS and gettext for Linux, Rust for the terminal app, and the tables in the docs.
@@ -452,9 +452,10 @@ function swiftRawString(text, source) {
   return `#"""\n${text}\n"""#`
 }
 
-/** The presets the apps offer, as data: the services. */
-function bundledPresets() {
-  const servicesSource = 'spec/presets/services.json'
+const servicesSource = 'spec/presets/services.json'
+
+/** The services preset, checked: its text and what it holds. */
+function readServices() {
   const servicesText = read(servicesSource)
   const services = JSON.parse(servicesText)
   const ids = services.services.map((service) => service.id)
@@ -465,7 +466,12 @@ function bundledPresets() {
     if (!/^https:\/\//.test(service.link)) fail(`${servicesSource}: ${service.id} needs an https link`)
     if (typeof service.local !== 'boolean' || !service.symbol) fail(`${servicesSource}: ${service.id} needs local and symbol`)
   }
+  return { servicesText, services }
+}
 
+/** The presets the apps offer, as data: the services. */
+function bundledPresets() {
+  const { servicesText } = readServices()
   return `// ${generatedFrom('spec/presets')}\n\n` +
     `/// The presets as their JSON files. Compiled in, so no resource bundle has to be found at run time.\n` +
     `enum Presets {\n` +
@@ -951,6 +957,18 @@ function rustStrings() {
   return out + `];\n`
 }
 
+/** chat/src/presets.generated.rs: the services the terminal app offers on the first run, in the order of the file. */
+function rustPresets() {
+  const { services } = readServices()
+  const quote = (text) => JSON.stringify(text)
+  let out = `// ${generatedFrom('spec/presets')}\n#![cfg_attr(rustfmt, rustfmt::skip)]\n\n`
+  out += `/// A service offered on the first run: its address is filled in, and the person can change it.\npub struct Service {\n`
+  out += `    pub id: &'static str,\n    /// It runs on this computer: no key is needed.\n    pub local: bool,\n    pub base_url: &'static str,\n    /// Where to go to get a key, or a model to download.\n    pub link: &'static str,\n}\n\n`
+  out += `/// Remote, then local, as ${servicesSource} lists them.\npub static SERVICES: &[Service] = &[\n`
+  for (const s of services.services) out += `    Service { id: ${quote(s.id)}, local: ${s.local}, base_url: ${quote(s.baseURL)}, link: ${quote(s.link)} },\n`
+  return out + `];\n`
+}
+
 // =============================================================================================
 // Docs: tables in docs/ux, the component reference and the platform READMEs
 // =============================================================================================
@@ -1153,6 +1171,7 @@ const outputs = [
   // Terminal
   ['chat/src/theme.generated.rs', rustTheme()],
   ['chat/src/strings.generated.rs', rustStrings()],
+  ['chat/src/presets.generated.rs', rustPresets()],
   // Docs
   ['docs/design/components.md', componentsDoc()],
   ...platformReadmes(),

@@ -145,7 +145,7 @@ final class Assistant {
         return try client(for: service)
     }
 
-    /// Everything an Imp may use: its own tools (`own`: body, senses, setting itself up, the troupe, computer control, the Den),
+    /// Everything an Imp may use: its own tools (`own`: body, senses, setting itself up, the troupe, computer control, the Den), the skills,
     /// the shell in its own folder (unless switched off) and its MCP servers. The shell gets the
     /// Imp's service, key and model as environment variables.
     func tools(for imp: ImpProfile, own: ToolProvider? = nil) throws -> ToolProvider? {
@@ -159,6 +159,7 @@ final class Assistant {
         }
         if !imp.servers.isEmpty { members.append(MCPScope(hub: hub, servers: Set(imp.servers))) }
         members.append(ComputerToolHost(control: computerControl(for: imp.id)))
+        if let skills = config?.agentLibrary.skillTools { members.append(skills) }
         // What is switched off for the Imp (groups and single tools) is applied here, once.
         return ToolSet(members, selection: imp.toolSelection)
     }

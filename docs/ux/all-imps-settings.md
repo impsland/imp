@@ -245,12 +245,8 @@ The pages follow the Pebble design language (see [Design](/design/)). Every sett
 | `devices.node.label` | {name}, {state}. Imps: {imps} |
 | `devices.node.label_empty` | {name}, {state} |
 | `devices.node.this_mac_label` | {name}, this Mac |
-| `devices.on_screen` | On its screen |
 | `devices.place.body` | On |
 | `devices.place.mind` | Thinks on |
-| `devices.plug.off` | not plugged in |
-| `devices.plug.on` | plugged in |
-| `devices.plug.title` | What {name} can use here |
 | `devices.reach.at` | Reachable at |
 | `devices.reach.away` | Away |
 | `devices.reach.direct` | Direct, on the local network |
@@ -278,8 +274,13 @@ The pages follow the Pebble design language (see [Design](/design/)). Every sett
 | `devices.this.info` | Link another device here. The dot shows whether The Hop lets devices find each other from anywhere. |
 | `devices.this_mac_badge` | This Mac |
 | `devices.title` | Devices |
+| `devices.tool.off` | Off |
+| `devices.tool.on` | On |
+| `devices.tools.all_off` | Turn all off |
+| `devices.tools.all_on` | Turn all on |
+| `devices.tools.built_in` | Built in |
 | `devices.tools.commands` | Commands |
-| `devices.tools.toggle` | Show or hide the switches |
+| `devices.tools.servers` | Tool servers |
 | `devices.unknown_device` | a device not linked with this Mac |
 | `devices.visitor.can_use` | Its device can use here |
 | `devices.visitor.send_home` | Send home |

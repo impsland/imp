@@ -263,10 +263,11 @@ final class PocketRuntime {
     /// One ask, from you or from another Imp: thinks, files the turn in its chat.
     /// `limitedTo` names the device asking when this iPhone doesn't count it as the owner's: no tools then.
     private func answer(_ text: String, of id: UUID, from sender: ChatTurn.Sender? = nil, limitedTo device: String? = nil,
-                        turnID: UUID? = nil, answered: (event: String, from: ChatTurn.Sender)? = nil, media: [MediaFile] = [], depth: Int = 0) async throws -> PocketAnswer {
+                        turnID: UUID? = nil, answered: (event: String, from: ChatTurn.Sender)? = nil, media: [MediaFile] = [], depth: Int = 0,
+                        how: CommandSettings? = nil) async throws -> PocketAnswer {
         guard let imp = store.imp(id) else { throw Failure(String(localized: "That Imp isn't on this iPhone.")) }
         let result = try await brain.ask(text, of: imp, from: sender, talk: talk(for: imp, depth: depth), limitedTo: device.map { ($0, hub.name) },
-                                         turnID: turnID, answered: answered, media: media) { [weak self] work in
+                                         turnID: turnID, answered: answered, media: media, library: PhoneLibrary.shared, how: how) { [weak self] work in
             await self?.report(work, for: id)
         }
         store.update(id) { $0.record(result) }
@@ -645,13 +646,26 @@ extension PocketRuntime: ChatSource {
     func ask(_ id: UUID, _ text: String, media: [MediaFile]) -> Bool { ask(id, text, from: nil, media: media, limitedTo: nil); return true }
 
     /// `device`: another device asking (its share of the queue is capped). A full queue drops the ask.
-    private func ask(_ id: UUID, _ text: String, from device: UUID?, media: [MediaFile] = [], limitedTo stranger: String?) {
+    private func ask(_ id: UUID, _ text: String, from device: UUID?, media: [MediaFile] = [], limitedTo stranger: String?, how: CommandSettings? = nil) {
         let media = Array(media.prefix(MediaFile.maxCount))
         var text = text.trimmingCharacters(in: .whitespacesAndNewlines)
         // Only files: the usual words for them (the chat keeps the words, never the bytes).
         if text.isEmpty, !media.isEmpty { text = MediaFile.defaultWords(for: media) }
         guard !text.isEmpty, hasBrain(id) else { return }
-        enqueue(id, from: device) { [self] in _ = try? await answer(text, of: id, limitedTo: stranger, media: media) }
+        enqueue(id, from: device) { [self] in _ = try? await answer(text, of: id, limitedTo: stranger, media: media, how: how) }
+    }
+
+    /// A custom command's message. Its `agent` is another Imp of this iPhone that answers instead.
+    func ask(_ id: UUID, _ text: String, media: [MediaFile], how: CommandSettings) -> String? {
+        var target = id
+        if let agent = how.agent {
+            guard let other = store.imps.first(where: { $0.name.caseInsensitiveCompare(agent) == .orderedSame }) else {
+                return String(localized: "There is no Imp “\(agent)” on this iPhone.")
+            }
+            target = other.id
+        }
+        ask(target, text, from: nil, media: media, limitedTo: nil, how: how)
+        return nil
     }
 
     func stop(_ id: UUID) { running[id]?.cancel() }

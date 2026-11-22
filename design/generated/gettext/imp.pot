@@ -668,11 +668,6 @@ msgctxt "devices.node.this_mac_label"
 msgid "{name}, this Mac"
 msgstr ""
 
-#. Title of the chips of the Imps on a device's screen.
-msgctxt "devices.on_screen"
-msgid "On its screen"
-msgstr ""
-
 #. Where an Imp's body is, as a tag on a device row.
 msgctxt "devices.place.body"
 msgid "On"
@@ -681,21 +676,6 @@ msgstr ""
 #. Where an Imp thinks, as a tag on a device row.
 msgctxt "devices.place.mind"
 msgid "Thinks on"
-msgstr ""
-
-#. Spoken value of a plug that is not plugged in.
-msgctxt "devices.plug.off"
-msgid "not plugged in"
-msgstr ""
-
-#. Spoken value of a plug that is plugged in.
-msgctxt "devices.plug.on"
-msgid "plugged in"
-msgstr ""
-
-#. Title of the card of plugs: what a linked device can use of this Mac's Imps.
-msgctxt "devices.plug.title"
-msgid "What {name} can use here"
 msgstr ""
 
 #. Title of the addresses this Mac can be reached at.
@@ -833,14 +813,39 @@ msgctxt "devices.title"
 msgid "Devices"
 msgstr ""
 
+#. Spoken state of a tool chip that is switched off.
+msgctxt "devices.tool.off"
+msgid "Off"
+msgstr ""
+
+#. Spoken state of a tool chip that is switched on.
+msgctxt "devices.tool.on"
+msgid "On"
+msgstr ""
+
+#. Tooltip and spoken label of the button that switches every tool of a group off.
+msgctxt "devices.tools.all_off"
+msgid "Turn all off"
+msgstr ""
+
+#. Tooltip and spoken label of the button that switches every tool of a group on.
+msgctxt "devices.tools.all_on"
+msgid "Turn all on"
+msgstr ""
+
+#. Heading of the group of an Imp's built-in tools in a device's tools grid.
+msgctxt "devices.tools.built_in"
+msgid "Built in"
+msgstr ""
+
 #. Name of the tool that runs commands.
 msgctxt "devices.tools.commands"
 msgid "Commands"
 msgstr ""
 
-#. Tooltip of the button that opens or closes a list of tool switches.
-msgctxt "devices.tools.toggle"
-msgid "Show or hide the switches"
+#. Heading of the group of tools that come from MCP servers in a device's tools grid.
+msgctxt "devices.tools.servers"
+msgid "Tool servers"
 msgstr ""
 
 #. A device this Mac is not linked with.
@@ -3894,6 +3899,11 @@ msgstr ""
 #. Short name of a built-in tool in the Look section: reads the HTML background behind the Imps.
 msgctxt "tool.show_background"
 msgid "View background"
+msgstr ""
+
+#. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).
+msgctxt "tool.use_skill"
+msgid "Use a skill"
 msgstr ""
 
 #. Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).

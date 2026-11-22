@@ -88,9 +88,13 @@ public struct PocketBrain: Sendable {
     /// turn is filed under, the question's id when an Imp on another device asked (see `AskedTalks`).
     /// `answered`: this turn is the answer to a message the Imp sent without waiting. `event` is what the model
     /// reads, `text` what the chat shows, `from` the Imp that answered. It is filed in the chat with you.
+    /// `library`: its skills are listed in the system text and read with `use_skill`. `how`: a custom command's
+    /// front matter: the model for this message only (the model's name on the Imp's own service), and a subtask
+    /// answers without the chat's memory and is not remembered.
     public func ask(_ text: String, of imp: PocketImp, from sender: ChatTurn.Sender? = nil, talk: PocketTalk = PocketTalk(), tools: Bool = true,
                     limitedTo stranger: (device: String, home: String)? = nil, turnID: UUID? = nil,
                     answered: (event: String, from: ChatTurn.Sender)? = nil, media: [MediaFile] = [],
+                    library: AgentLibrary? = nil, how: CommandSettings? = nil,
                     onWork: @escaping @Sendable (LinkWork?) async -> Void = { _ in }) async throws -> PocketAnswer {
         let allowed = tools && stranger == nil
         let hub = MCPHub()
@@ -109,11 +113,15 @@ public struct PocketBrain: Sendable {
             var tools: [ToolProvider] = []
             if !configs.isEmpty { tools.append(hub) }
             if allowed { tools.append(PocketTools(talk: sender == nil ? talk : PocketTalk(animations: talk.animations, play: talk.play))) }
+            // The skills, unless the Imp has `use_skill` switched off.
+            let skills = allowed && !(imp.toolsOff ?? []).contains(ToolRegistry.ownID(.skills, tool: OwnTools.useSkill)) ? library : nil
+            if let skillTools = skills?.skillTools { tools.append(skillTools) }
             let client = try OpenAIClient(baseURL: imp.brain.baseURL, apiKey: secrets.get(.apiKey, imp: imp.id) ?? "", session: session)
-            let agent = Agent(client: client, model: imp.brain.model, tools: ToolSet(tools, selection: ToolSelection(toolsOff: Set(imp.toolsOff ?? []), text: imp.toolText ?? [:])), limits: limits)
+            let model = try how?.model.map { try modelRefParse(text: $0).model } ?? imp.brain.model
+            let agent = Agent(client: client, model: model, tools: ToolSet(tools, selection: ToolSelection(toolsOff: Set(imp.toolsOff ?? []), text: imp.toolText ?? [:])), limits: limits)
             let turn = answered.map { .user($0.event) } ?? sender.map { Briefing.message(from: $0.name, text, place: "in the user's troupe") } ?? Briefing.message(text, media: media)
-            let memory = imp.memory(with: sender?.id)
-            let system = [imp.personality, Briefing.pocket, stranger.map { Briefing.untrusted(device: $0.device, home: $0.home) } ?? ""].map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            let memory = how?.subtask == true ? ChatMemory() : imp.memory(with: sender?.id)
+            let system = [imp.personality, Briefing.pocket, skills?.skillsPrompt ?? "", stranger.map { Briefing.untrusted(device: $0.device, home: $0.home) } ?? ""].map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
                 .filter { !$0.isEmpty }.joined(separator: "\n\n")
             let context = memory.context(system: system, turn: turn, exchanges: PocketImp.exchangesSent)
             await run.start()
@@ -129,7 +137,7 @@ public struct PocketBrain: Sendable {
         switch outcome {
         case .success(let (reply, memory)):
             let turn = ChatTurn(id: turnID ?? UUID(), request: text, reply: reply, steps: await run.steps, via: answered != nil ? .answer : sender == nil ? .typed : .imp, sender: answered?.from ?? sender)
-            return PocketAnswer(turn: turn, memory: memory, peer: sender?.id)
+            return PocketAnswer(turn: turn, memory: how?.subtask == true ? nil : memory, peer: sender?.id)
         case .failure(let error):
             if error is CancellationError || Task.isCancelled { throw CancellationError() }
             let turn = ChatTurn(id: turnID ?? UUID(), request: text, reply: error.localizedDescription, failed: true, steps: await run.steps,

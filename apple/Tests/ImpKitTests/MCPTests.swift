@@ -107,7 +107,7 @@ final class McpStub: URLProtocol, @unchecked Sendable {
         var iterator = transport.incoming.makeAsyncIterator()
         try await transport.send(#"{"id":1,"method":"initialize"}"#)
         #expect(await iterator.next() == #"{"id":1,"result":{}}"#)
-        transport.initialized(protocolVersion: "2025-03-26")
+        transport.speak(protocolVersion: "2025-03-26")
         try await transport.send(#"{"id":2,"method":"tools/list"}"#)
         #expect(await iterator.next() == #"{"id":2,"result":{}}"#)
         #expect(await iterator.next() == #"{"id":3}"#)
@@ -138,6 +138,68 @@ final class McpStub: URLProtocol, @unchecked Sendable {
         try await transport.send(#"{"id":1,"method":"initialize"}"#)
         await transport.close()
         #expect(McpStub.seen.map(\.httpMethod) == ["POST"])
+    }
+
+    /// A server that lists the stateless revision gets no handshake: every request names the revision
+    /// in its headers and its `_meta`, and a tool call names the tool.
+    @Test func httpClientSpeaksStatelessWhenTheServerDoes() async throws {
+        McpStub.reset()
+        McpStub.handler = { request, body in
+            let text = String(decoding: body, as: UTF8.self)
+            let id = text.firstMatch(of: /"id"\s*:\s*(\d+)/).map { String($0.1) } ?? "0"
+            let result = switch request.value(forHTTPHeaderField: "Mcp-Method") {
+            case "server/discover": #"{"supportedVersions":["2026-07-28","2025-11-25"],"capabilities":{"tools":{}}}"#
+            case "tools/list": #"{"tools":[{"name":"add","inputSchema":{"type":"object"}}]}"#
+            case "tools/call": #"{"resultType":"complete","content":[{"type":"text","text":"5"}]}"#
+            default: #"{}"#
+            }
+            return (200, ["Content-Type": "application/json"], Data(#"{"jsonrpc":"2.0","id":\#(id),"result":\#(result)}"#.utf8))
+        }
+        let config = URLSessionConfiguration.ephemeral
+        config.protocolClasses = [McpStub.self]
+        let server = MCPServerConfig(name: "s", transport: .http, url: "https://mcp.example.com/mcp")
+        let client = try MCPClient(config: server, auth: nil, session: URLSession(configuration: config))
+        try await client.connect()
+        #expect(try await client.listTools().map(\.name) == ["add"])
+        #expect(try await client.callTool(name: "add", arguments: ["a": 2]) == "5")
+        await client.close()
+        let seen = McpStub.seen
+        #expect(seen.map { $0.value(forHTTPHeaderField: "Mcp-Method") } == ["server/discover", "tools/list", "tools/call"])
+        #expect(seen.allSatisfy { $0.value(forHTTPHeaderField: "MCP-Protocol-Version") == "2026-07-28" })
+        #expect(seen[2].value(forHTTPHeaderField: "Mcp-Name") == "add")
+        #expect(seen.allSatisfy { $0.httpMethod == "POST" })
+    }
+
+    /// A server without the stateless revision refuses discovery and gets the handshake instead.
+    @Test func httpClientFallsBackToTheHandshake() async throws {
+        McpStub.reset()
+        McpStub.handler = { request, body in
+            let text = String(decoding: body, as: UTF8.self)
+            let id = text.firstMatch(of: /"id"\s*:\s*(\d+)/).map { String($0.1) } ?? "0"
+            let json = ["Content-Type": "application/json"]
+            if text.contains("server/discover") {
+                return (400, json, Data(#"{"jsonrpc":"2.0","id":\#(id),"error":{"code":-32601,"message":"Method not found"}}"#.utf8))
+            }
+            if text.contains("\"initialize\"") {
+                return (200, json, Data(#"{"jsonrpc":"2.0","id":\#(id),"result":{"protocolVersion":"2025-11-25","capabilities":{}}}"#.utf8))
+            }
+            if text.contains("tools/list") {
+                return (200, json, Data(#"{"jsonrpc":"2.0","id":\#(id),"result":{"tools":[]}}"#.utf8))
+            }
+            return (202, [:], Data())
+        }
+        let config = URLSessionConfiguration.ephemeral
+        config.protocolClasses = [McpStub.self]
+        let server = MCPServerConfig(name: "s", transport: .http, url: "https://mcp.example.com/mcp")
+        let client = try MCPClient(config: server, auth: nil, session: URLSession(configuration: config))
+        try await client.connect()
+        #expect(try await client.listTools().isEmpty)
+        await client.close()
+        let seen = McpStub.seen
+        #expect(seen[0].value(forHTTPHeaderField: "Mcp-Method") == "server/discover")
+        #expect(seen[1].value(forHTTPHeaderField: "MCP-Protocol-Version") == nil)
+        #expect(seen.last?.value(forHTTPHeaderField: "MCP-Protocol-Version") == "2025-11-25")
+        #expect(seen.last?.value(forHTTPHeaderField: "Mcp-Method") == nil)
     }
 
     @Test func stdioEndToEnd() async throws {

@@ -18,6 +18,7 @@ struct ImpPhoneApp: App {
             hub.join(code: CommandLine.arguments[i + 1])
         }
         #endif
+        PhoneLibrary.prepareFolders()
         _hub = State(initialValue: hub)
         _pocket = State(initialValue: PocketRuntime(hub: hub, store: Self.store()))
     }

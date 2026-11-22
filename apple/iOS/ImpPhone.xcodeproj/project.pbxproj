@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		01A5AB4A5C94A625059EA8F4 /* StatusPill.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9767FB8E8C122D97A13FCBE3 /* StatusPill.swift */; };
+		03BCC65B3DA20BD13D024A0C /* PhoneLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73AA3F7B69EDB69E37552707 /* PhoneLibrary.swift */; };
 		06B1D160FF1F22B46A18B0A5 /* LinkHub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E51505EB7F9729D43558F80 /* LinkHub.swift */; };
 		06F103700CE173EDD57B0E3E /* PhoneSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 918A04F0CAE8B032656AA893 /* PhoneSettings.swift */; };
 		08CE6712F892B836521DDB43 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = E175916FB949122EB3243FA9 /* Theme.swift */; };
@@ -52,6 +53,7 @@
 		7111C93069366E5EC047E1EE /* PocketEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FB36350F39A09BB2FEEF16 /* PocketEditor.swift */; };
 		7A9D2DBAD9B544A4CC6A5526 /* DevicesSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506007DB685956244438C720 /* DevicesSheet.swift */; };
 		7D1D19EB43C342E37096B687 /* ImpPen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 689E459398D22037E7D4BBF2 /* ImpPen.swift */; };
+		809CEE3939E3DF7B32E53EBA /* CommandList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E6F56233029E239EF906447 /* CommandList.swift */; };
 		81E8A27F77D5519B91EC0977 /* FirstRunPhoneFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = C75429333D8816180164775B /* FirstRunPhoneFlow.swift */; };
 		826369A99BB16A469039CF4D /* EchoFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEBA00ECBA0781D35825508C /* EchoFeedback.swift */; };
 		848910E13A84D80E6B1039E8 /* PhoneSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 975BA420957EF15542EF8161 /* PhoneSnapshotTests.swift */; };
@@ -108,6 +110,7 @@
 		04FB3666BAFA7176923A95A2 /* PhoneSelect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneSelect.swift; sourceTree = "<group>"; };
 		0D2E54D6D3896160943BF9DC /* SoftLight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoftLight.swift; sourceTree = "<group>"; };
 		0DC695E7AE998FA6BF5BA85B /* ImpPhone.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = ImpPhone.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		0E6F56233029E239EF906447 /* CommandList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandList.swift; sourceTree = "<group>"; };
 		10193FB32C2FF1FBBDF36113 /* BubbleSizes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BubbleSizes.swift; sourceTree = "<group>"; };
 		1241912399C21244BF1CD3E0 /* StageEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StageEngine.swift; sourceTree = "<group>"; };
 		1440D33050877E677E46BC2E /* Motion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Motion.swift; sourceTree = "<group>"; };
@@ -145,6 +148,7 @@
 		7237C199DA3C4E0C6C9D47F8 /* PocketToolsPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PocketToolsPanel.swift; sourceTree = "<group>"; };
 		7240F8717F287F52695EE995 /* Talks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Talks.swift; sourceTree = "<group>"; };
 		736AA8C30843D0B14BB9BC22 /* GameLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameLayer.swift; sourceTree = "<group>"; };
+		73AA3F7B69EDB69E37552707 /* PhoneLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneLibrary.swift; sourceTree = "<group>"; };
 		764C78F6EB0519E79420F7C3 /* Attachments.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Attachments.swift; sourceTree = "<group>"; };
 		86EC44471EB3D16C062A1ABF /* Geometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Geometry.swift; sourceTree = "<group>"; };
 		8710DB1B265BCCBA13421566 /* PocketStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PocketStore.swift; sourceTree = "<group>"; };
@@ -370,6 +374,7 @@
 				764C78F6EB0519E79420F7C3 /* Attachments.swift */,
 				58A85E5C1FDD8C554EB50819 /* ChatSheet.swift */,
 				560FD7E7B4D4DC3F750A6B4F /* ChatSource.swift */,
+				0E6F56233029E239EF906447 /* CommandList.swift */,
 				3856A773F8D4ACD748706AE0 /* PictureViewer.swift */,
 				2DC6DAEC6034DB822FEE38DF /* ReplyBlocks.swift */,
 				7240F8717F287F52695EE995 /* Talks.swift */,
@@ -403,6 +408,7 @@
 			isa = PBXGroup;
 			children = (
 				2A19E5176B3C6283E47AA469 /* Keychain.swift */,
+				73AA3F7B69EDB69E37552707 /* PhoneLibrary.swift */,
 				66FB36350F39A09BB2FEEF16 /* PocketEditor.swift */,
 				5217187CC8D3EC6C1EEF960F /* PocketRuntime.swift */,
 				36FEA41920F321795578FD56 /* PocketSettingsParts.swift */,
@@ -576,6 +582,7 @@
 				AE90A8ACB0768C63CE2EE103 /* CameraView.swift in Sources */,
 				30898511F7AA907E0E81A084 /* ChatSheet.swift in Sources */,
 				2CC77F90BD05D01F58B04866 /* ChatSource.swift in Sources */,
+				809CEE3939E3DF7B32E53EBA /* CommandList.swift in Sources */,
 				7A9D2DBAD9B544A4CC6A5526 /* DevicesSheet.swift in Sources */,
 				A6A1314C192470E04005815B /* DoorLabels.swift in Sources */,
 				B2CE7FA261A57EF44AEA29B9 /* EchoCoach.swift in Sources */,
@@ -614,6 +621,7 @@
 				EAF290675BD6BDB45644C78D /* PhoneBrainsSection.swift in Sources */,
 				16658C47766CD63B6BE73596 /* PhoneDevicesSection.swift in Sources */,
 				6F4B6CCDC829CEDCD380A8B7 /* PhoneHidden.swift in Sources */,
+				03BCC65B3DA20BD13D024A0C /* PhoneLibrary.swift in Sources */,
 				150524892102508DC50DB777 /* PhoneSelect.swift in Sources */,
 				FB78B470E4BB7E1DBF1498D8 /* PhoneServerCards.swift in Sources */,
 				06F103700CE173EDD57B0E3E /* PhoneSettings.swift in Sources */,
@@ -702,7 +710,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 36;
+				CURRENT_PROJECT_VERSION = 37;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -717,7 +725,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
-				MARKETING_VERSION = 3.6.1;
+				MARKETING_VERSION = 3.7.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -838,7 +846,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 36;
+				CURRENT_PROJECT_VERSION = 37;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -859,7 +867,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
-				MARKETING_VERSION = 3.6.1;
+				MARKETING_VERSION = 3.7.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;

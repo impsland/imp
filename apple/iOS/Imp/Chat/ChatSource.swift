@@ -51,6 +51,9 @@ protocol ChatSource {
     func ask(_ id: UUID, _ text: String)
     /// With photos, sounds, videos or files. False when they couldn't be sent (a visitor's home didn't take one).
     func ask(_ id: UUID, _ text: String, media: [MediaFile]) -> Bool
+    /// A custom command's message (`how` is its front matter). A sentence says why it could not be sent (nil: it
+    /// was). Only the Imps of this iPhone honour `how`: a visiting Imp thinks at its home, with its own settings.
+    func ask(_ id: UUID, _ text: String, media: [MediaFile], how: CommandSettings) -> String?
     func stop(_ id: UUID)
     func newChat(_ id: UUID)
     /// Its saved chats, to pick one to carry on in. Nil when the source doesn't know (yet).
@@ -67,6 +70,9 @@ extension LinkHub: ChatSource {
     func mood(_ id: UUID) -> Mood? { moods[id] }
     func act(_ id: UUID) -> Performance? { acts[id] }
     func availability(_ id: UUID) -> ChatAvailability { ChatAvailability(wakefulness(id)) }
+    func ask(_ id: UUID, _ text: String, media: [MediaFile], how: CommandSettings) -> String? {
+        ask(id, text, media: media) ? nil : String(localized: "The files didn't reach its home. Try again.")
+    }
     func chatList(_ id: UUID) -> ChatList? { chatLists[id].map { ChatList(current: $0.current, chats: $0.chats) } }
 
     /// Everyone this visiting Imp can message: the Imps on this screen and on its home's.

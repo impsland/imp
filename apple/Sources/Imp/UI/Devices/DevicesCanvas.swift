@@ -37,6 +37,8 @@ struct DevicesCanvas: View {
     /// canvas keeps the whole map in view as the window changes. After, a refresh of the link leaves the view alone.
     @State private var canvas: CGSize = .zero
     @State private var steered = false
+    /// Where the canvas is panned and zoomed to, for what is drawn above it (`TalkLines`).
+    @State private var viewport = Viewport.identity
     @Environment(\.colorScheme) private var scheme
     @Environment(\.devicesMotion) private var motion
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -50,7 +52,7 @@ struct DevicesCanvas: View {
         let lit = focus.map(base.lit(for:))
         let moving = motion && !reduceMotion
         SwiftFlow(
-            nodes: graph.nodes, edges: graph.edges,
+            nodes: graph.nodes, edges: graph.edges.filter { $0.data?.isTalk != true },
             onNodesChange: { changes in
                 for case .position(let id, let position) in changes where graph.nodes.first(where: { $0.id == id })?.parentId == nil {
                     moved[id] = CGPoint(x: position.x, y: position.y)
@@ -60,6 +62,7 @@ struct DevicesCanvas: View {
             backgroundVariant: .dots, theme: theme, colorMode: scheme == .dark ? .dark : .light,
             fitView: false,
             accessibilityConfig: AccessibilityConfig(announceSelectionChanges: false),
+            onViewportChange: { viewport = $0 },
             onNodeClick: { node in if let sheet = graph.sheet(ofNode: node.id) { open(sheet) } },
             onEdgeClick: { edge in if let sheet = graph.sheet(ofEdge: edge.id) { open(sheet) } },
             onMoveStart: { _ in steered = true }, onInit: { fit(graph) },
@@ -74,15 +77,15 @@ struct DevicesCanvas: View {
             nodeContent: { node in
                 switch node.data.role {
                 case .device(let device):
-                    AnyView(DeviceNodeCard(id: node.id, node: device, hovered: hoveredNode == node.id, help: node.data.label)
+                    AnyView(DeviceNodeCard(id: node.id, node: device, docks: node.data.docks, hovered: hoveredNode == node.id, help: node.data.label)
                         .opacity((lit?.contains(node.id) ?? true ? 1 : Opacity.dimmed) * (device.linked ? 1 : Opacity.dimmed)))
                 case .imp(let contact, let ours):
-                    AnyView(DeviceImpChip(id: node.id, name: contact.name, hue: contact.hue, ours: ours, home: node.data.homeSymbol,
+                    AnyView(DeviceImpChip(name: contact.name, hue: contact.hue, ours: ours, home: node.data.homeSymbol,
                                           hovered: hoveredNode == node.id, help: node.data.label)
                         .opacity(lit?.contains(node.id) ?? true ? 1 : Opacity.dimmed))
                 }
             },
-            overlay: { AnyView(controls(graph)) })
+            overlay: { AnyView(ZStack { TalkLines(routes: DeviceGraph.talkRoutes(in: graph), viewport: viewport, lit: lit); controls(graph) }) })
         // SwiftFlow's nodes are drawn without accessibility names of their own. The list below stands in for the
         // canvas, so every device, Imp and line can be read and opened.
         .accessibilityRepresentation {
@@ -133,6 +136,7 @@ struct DevicesCanvas: View {
     private func fit(_ graph: DeviceGraph.Graph) {
         guard let viewport = DeviceViewport.fitting(graph, in: canvas) else { return }
         steered = false
+        self.viewport = viewport
         flow.setViewport(viewport, animated: false)
     }
 

@@ -118,6 +118,7 @@ pub enum BuiltInTool {
     ImpSetTraits,
     MacStatus,
     BrowserPage,
+    UseSkill,
     ImpListTriggers,
     ImpAddTrigger,
     ImpRemoveTrigger,

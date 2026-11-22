@@ -63,6 +63,7 @@ export default defineConfig({
           { text: 'Using the terminal chat', link: '/apps/cli-chat' },
           { text: 'Commands in the chat', link: '/apps/cli-commands' },
           { text: 'Sub-agents', link: '/apps/cli-agents' },
+          { text: 'Skills and commands in the apps', link: '/apps/skills-commands' },
           { text: 'Testing', link: '/apps/testing' },
           { text: 'Releasing the Mac app', link: '/apps/macos-release' },
         ],

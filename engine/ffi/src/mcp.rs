@@ -86,9 +86,37 @@ fn json(text: &str) -> Result<Value, McpProtocolError> {
     })
 }
 
+/// The revision without a handshake. An HTTP connection that speaks it sends it on every request.
+#[uniffi::export]
+pub fn mcp_stateless_version() -> String {
+    protocol::STATELESS_VERSION.to_string()
+}
+
+/// Asks an HTTP server whether it speaks the stateless revision (see `mcp_speaks_stateless`).
+#[uniffi::export]
+pub fn mcp_discover_request(id: u64) -> String {
+    protocol::discover_request(id).to_string()
+}
+
+/// Whether the result of `server/discover` lists the stateless revision. Otherwise the client does
+/// the `initialize` handshake.
+#[uniffi::export]
+pub fn mcp_speaks_stateless(result_json: String) -> Result<bool, McpProtocolError> {
+    Ok(protocol::speaks_stateless(&json(&result_json)?))
+}
+
+/// The handshake, for a server that does not speak the stateless revision.
 #[uniffi::export]
 pub fn mcp_initialize_request(id: u64) -> String {
     protocol::initialize_request(id).to_string()
+}
+
+/// The revision to speak after `initialize`. Fails with a sentence when the server picked a revision
+/// Imp does not speak: the app must disconnect and show it.
+#[uniffi::export]
+pub fn mcp_checked_version(initialize_result_json: String) -> Result<String, McpProtocolError> {
+    protocol::checked_version(&json(&initialize_result_json)?)
+        .map_err(|message| McpProtocolError::Failed { message })
 }
 
 #[uniffi::export]
@@ -96,21 +124,23 @@ pub fn mcp_initialized_notification() -> String {
     protocol::initialized_notification().to_string()
 }
 
+/// A page of the tool list, in `protocol_version`, the revision the connection speaks.
 #[uniffi::export]
-pub fn mcp_tools_list_request(id: u64, cursor: Option<String>) -> String {
-    protocol::tools_list_request(id, cursor.as_deref()).to_string()
+pub fn mcp_tools_list_request(id: u64, cursor: Option<String>, protocol_version: String) -> String {
+    protocol::tools_list_request(id, cursor.as_deref(), &protocol_version).to_string()
 }
 
-/// The call of a tool. `arguments` is the JSON text the model wrote, or nothing.
+/// The call of a tool, in `protocol_version`. `arguments` is the JSON text the model wrote, or nothing.
 #[uniffi::export]
 pub fn mcp_tools_call_request(
     id: u64,
     name: String,
     arguments: String,
+    protocol_version: String,
 ) -> Result<String, McpProtocolError> {
     let arguments = protocol::parse_arguments(&arguments)
         .map_err(|message| McpProtocolError::Failed { message })?;
-    Ok(protocol::tools_call_request(id, &name, arguments).to_string())
+    Ok(protocol::tools_call_request(id, &name, arguments, &protocol_version).to_string())
 }
 
 /// Reads one message the server sent. Text that is not JSON is skipped.
@@ -186,16 +216,18 @@ pub fn mcp_session_header_name() -> String {
     protocol::SESSION_HEADER.to_string()
 }
 
-/// The headers of a POST, once the session and protocol version are known.
+/// The headers of the POST of `message` (JSON text), with the session and the revision once known.
 #[uniffi::export]
 pub fn mcp_post_headers(
+    message: String,
     session: Option<String>,
     protocol_version: Option<String>,
-) -> Vec<McpHeader> {
-    headers(protocol::post_headers(
+) -> Result<Vec<McpHeader>, McpProtocolError> {
+    Ok(headers(protocol::post_headers(
+        &json(&message)?,
         session.as_deref(),
         protocol_version.as_deref(),
-    ))
+    )))
 }
 
 /// The headers of the DELETE that ends a session, or nothing when there is no session.

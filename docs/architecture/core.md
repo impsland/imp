@@ -32,10 +32,13 @@ or TLS stack, and the apps do their own I/O through the system (URLSession, Netw
 tests the core both ways.
 
 The MCP protocol itself needs no I/O and is always built (`engine/src/mcp/protocol.rs`): the JSON-RPC
-messages, how answers and tool lists are read, how tools are named, and the Streamable HTTP session
-headers. The apps call it through `imp-ffi` and only move the messages (a child process, URLSession).
-The command line transports call the same functions. When an HTTP session ends, the client sends a
-DELETE with the session id.
+messages, how answers and tool lists are read, how tools are named, and the Streamable HTTP headers. The
+apps call it through `imp-ffi` and only move the messages (a child process, URLSession). The command line
+transports call the same functions. Over HTTP the client first asks `server/discover` for the stateless
+revision `2026-07-28`, where every request carries the revision in `_meta` and in the `MCP-Protocol-Version`,
+`Mcp-Method` and `Mcp-Name` headers, and there is no session. A server that refuses discovery gets the
+`initialize` handshake (`2025-11-25`, or an older revision the server picks). A child process always gets
+the handshake. When a handshake server started a session, the client ends it with a DELETE.
 
 Streamed answers carry the model's reasoning as its own event (`StreamEvent::Reasoning`, and `reasoning` on
 the reply). It is read from `reasoning`, `reasoning_content` or the `reasoning.text` and `reasoning.summary`
@@ -64,6 +67,10 @@ The rest of a chat works the same way. These need no I/O, and both the apps and 
 - **The `.agents/` layout** (`engine/src/agents.rs`): front matter, agent and skill files, the instructions and
   skills in the system text, the `use_skill` tool, `${NAME}` values and the digest of what a project asks to
   be trusted. The command line app reads the folders. An app that adds `.agents/` reuses these rules.
+- **Custom commands** (`engine/src/custom.rs`): finding the command a typed line names, how the list words it, the
+  plan for a run (the filled-in text in pieces: plain text, a command line, a file) and putting the pieces
+  together again. Each app runs the command lines and reads the files behind its own permission rules. The Mac
+  and iPhone chats get the plan, the skills' system text and the `use_skill` tool through `engine/ffi/src/library.rs`.
 - **Chat memory** is used by the command line app too: it keeps the core's `ChatMemory` beside the chat it
   shows, so a long terminal chat is clipped, recapped (`/compact`) and noticed the same way as in the apps.
 

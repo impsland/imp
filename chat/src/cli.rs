@@ -55,7 +55,7 @@ pub enum Command {
     Manage(Manage),
     /// Chat with an Imp in a full-screen chat. Type /help inside. Esc or Ctrl+C leaves.
     Chat {
-        /// Which Imp to talk to (the only one, if there is one)
+        /// Which Imp to talk to. Without it a terminal opens the only Imp, asks which when there are several, and sets up the first when there are none
         #[arg(long, value_name = "NAME")]
         imp: Option<String>,
         /// Use the simple line chat even in a terminal

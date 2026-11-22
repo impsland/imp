@@ -138,7 +138,8 @@ mod tests {
     #[test]
     fn own_tools_are_their_group_and_name() {
         for (group, tool) in crate::tools::BUILT_IN {
-            if *tool == MESSAGE_TOOL {
+            // Those two have an action of their own (below).
+            if *tool == MESSAGE_TOOL || *tool == SKILL_TOOL {
                 continue;
             }
             let id = own_id(group, tool);

@@ -3,14 +3,32 @@
 //! transports in `client` and `http` only move the text these functions build and read.
 
 use crate::tools::{mcp_group_id, mcp_id, server_key};
+use base64::Engine as _;
+use base64::engine::general_purpose::STANDARD as BASE64;
 use serde_json::{Value, json};
 
-/// The protocol version this client speaks. A server may answer with an older one.
-pub const PROTOCOL_VERSION: &str = "2025-06-18";
-/// The header that carries the session a Streamable HTTP server starts after `initialize`.
+/// The newest revision Imp speaks. It has no handshake and no session: every request names the
+/// revision and the client in its `_meta` and in the `MCP-Protocol-Version` and `Mcp-Method` headers.
+/// Imp speaks it over HTTP and asks for it first with `server/discover`.
+pub const STATELESS_VERSION: &str = "2026-07-28";
+/// The revision asked for in `initialize`, the handshake of servers without [`STATELESS_VERSION`].
+pub const HANDSHAKE_VERSION: &str = "2025-11-25";
+/// The handshake revisions Imp speaks, newest first. A server may answer `initialize` with any of them.
+pub const HANDSHAKE_VERSIONS: &[&str] =
+    &[HANDSHAKE_VERSION, "2025-06-18", "2025-03-26", "2024-11-05"];
+/// The header that carries the session a handshake server starts after `initialize`.
 pub const SESSION_HEADER: &str = "Mcp-Session-Id";
-/// The header that carries the protocol version on every request after `initialize`.
+/// The header that carries the revision: on every request of [`STATELESS_VERSION`], and on every
+/// request after `initialize` with a handshake revision.
 pub const PROTOCOL_HEADER: &str = "MCP-Protocol-Version";
+/// The header that repeats a stateless request's method.
+pub const METHOD_HEADER: &str = "Mcp-Method";
+/// The header that repeats the name of the tool a stateless `tools/call` calls.
+pub const NAME_HEADER: &str = "Mcp-Name";
+/// The `_meta` keys of a stateless request.
+const META_VERSION: &str = "io.modelcontextprotocol/protocolVersion";
+const META_CAPABILITIES: &str = "io.modelcontextprotocol/clientCapabilities";
+const META_CLIENT: &str = "io.modelcontextprotocol/clientInfo";
 /// The most pages of tools read from one server.
 pub const MAX_TOOL_PAGES: usize = 50;
 /// The longest name a model may call a tool by.
@@ -67,62 +85,82 @@ pub struct ExposedTool {
     pub group: String,
 }
 
-fn request(id: u64, method: &str, params: Value) -> Value {
+fn client_info() -> Value {
+    json!({ "name": "imp", "version": env!("CARGO_PKG_VERSION") })
+}
+
+/// A request in `version`. A stateless request carries the revision and the client in `_meta`.
+fn request(id: u64, method: &str, mut params: Value, version: &str) -> Value {
+    if version == STATELESS_VERSION {
+        params["_meta"] = json!({
+            META_VERSION: STATELESS_VERSION,
+            META_CAPABILITIES: {},
+            META_CLIENT: client_info(),
+        });
+    }
     json!({ "jsonrpc": "2.0", "id": id, "method": method, "params": params })
 }
 
+/// Asks a server whether it speaks [`STATELESS_VERSION`]. See [`speaks_stateless`] for the answer.
+pub fn discover_request(id: u64) -> Value {
+    request(id, "server/discover", json!({}), STATELESS_VERSION)
+}
+
+/// Whether the result of `server/discover` lists [`STATELESS_VERSION`].
+pub fn speaks_stateless(discover_result: &Value) -> bool {
+    discover_result["supportedVersions"]
+        .as_array()
+        .is_some_and(|versions| versions.iter().any(|v| v == STATELESS_VERSION))
+}
+
+/// The handshake, for a server that does not speak [`STATELESS_VERSION`].
 pub fn initialize_request(id: u64) -> Value {
-    request(
-        id,
-        "initialize",
-        json!({
-            "protocolVersion": PROTOCOL_VERSION,
+    json!({
+        "jsonrpc": "2.0",
+        "id": id,
+        "method": "initialize",
+        "params": {
+            "protocolVersion": HANDSHAKE_VERSION,
             "capabilities": {},
-            "clientInfo": { "name": "imp", "version": env!("CARGO_PKG_VERSION") },
-        }),
-    )
+            "clientInfo": client_info(),
+        },
+    })
 }
 
 pub fn initialized_notification() -> Value {
     json!({ "jsonrpc": "2.0", "method": "notifications/initialized" })
 }
 
-pub fn tools_list_request(id: u64, cursor: Option<&str>) -> Value {
+/// A page of the tool list, in the revision the connection speaks.
+pub fn tools_list_request(id: u64, cursor: Option<&str>, version: &str) -> Value {
     let params = cursor.map_or_else(|| json!({}), |c| json!({ "cursor": c }));
-    request(id, "tools/list", params)
+    request(id, "tools/list", params, version)
 }
 
-pub fn tools_call_request(id: u64, name: &str, arguments: Value) -> Value {
+/// A tool call, in the revision the connection speaks.
+pub fn tools_call_request(id: u64, name: &str, arguments: Value, version: &str) -> Value {
     request(
         id,
         "tools/call",
         json!({ "name": name, "arguments": arguments }),
+        version,
     )
 }
 
-/// The revisions Imp speaks, newest first.
-pub const SUPPORTED_VERSIONS: &[&str] = &[PROTOCOL_VERSION, "2025-03-26", "2024-11-05"];
-
-/// The version to speak after `initialize`, or the sentence to show when the server picked a
-/// revision Imp does not speak (the client must then disconnect).
+/// The revision to speak after `initialize`: the one the server picked (ours when it names none), or
+/// the sentence to show when Imp does not speak it (the client must then disconnect).
 pub fn checked_version(initialize_result: &Value) -> Result<String, String> {
-    let version = negotiated_version(initialize_result);
-    if SUPPORTED_VERSIONS.contains(&version.as_str()) {
-        Ok(version)
+    let version = initialize_result["protocolVersion"]
+        .as_str()
+        .unwrap_or(HANDSHAKE_VERSION);
+    if HANDSHAKE_VERSIONS.contains(&version) {
+        Ok(version.to_string())
     } else {
         Err(format!(
-            "This server speaks MCP {version}; Imp speaks {}.",
-            SUPPORTED_VERSIONS.join(", ")
+            "This server speaks MCP {version}; Imp speaks {STATELESS_VERSION}, {}.",
+            HANDSHAKE_VERSIONS.join(", ")
         ))
     }
-}
-
-/// The version to speak after `initialize`: the one the server picked, or ours.
-pub fn negotiated_version(initialize_result: &Value) -> String {
-    initialize_result["protocolVersion"]
-        .as_str()
-        .unwrap_or(PROTOCOL_VERSION)
-        .to_string()
 }
 
 /// Reads one message from the server.
@@ -185,8 +223,12 @@ pub fn tools_page(result: &Value, seen: &[String]) -> ToolPage {
 }
 
 /// The text a model reads for the result of a tool call. Content that is not text is named in
-/// brackets. A result the tool marks as an error starts with "Error:".
+/// brackets. A result the tool marks as an error starts with "Error:", and so does a stateless result
+/// that asks for more input (Imp offers no elicitation, so it has none to give).
 pub fn tool_result_text(result: &Value) -> String {
+    if result["resultType"] == "input_required" {
+        return "Error: the tool asked for more input, which Imp cannot give.".to_string();
+    }
     let parts: Vec<String> = result["content"]
         .as_array()
         .into_iter()
@@ -258,8 +300,14 @@ pub fn expose(servers: &[(String, Vec<String>)]) -> Vec<ExposedTool> {
     out
 }
 
-/// The headers of a POST: the content types, and the session and protocol version once known.
-pub fn post_headers(session: Option<&str>, protocol: Option<&str>) -> Vec<(String, String)> {
+/// The headers of a POST of `message`: the content types, the session once a handshake server
+/// started one, and the revision once it is known. A stateless request also names its method and, for
+/// `tools/call`, the tool.
+pub fn post_headers(
+    message: &Value,
+    session: Option<&str>,
+    version: Option<&str>,
+) -> Vec<(String, String)> {
     let mut headers = vec![
         ("Content-Type".to_string(), "application/json".to_string()),
         (
@@ -267,23 +315,48 @@ pub fn post_headers(session: Option<&str>, protocol: Option<&str>) -> Vec<(Strin
             "application/json, text/event-stream".to_string(),
         ),
     ];
-    headers.extend(session_headers(session, protocol));
+    headers.extend(session_headers(session, version));
+    if version == Some(STATELESS_VERSION)
+        && let Some(method) = message["method"].as_str()
+    {
+        headers.push((METHOD_HEADER.to_string(), method.to_string()));
+        if method == "tools/call"
+            && let Some(name) = message["params"]["name"].as_str()
+        {
+            headers.push((NAME_HEADER.to_string(), header_value(name)));
+        }
+    }
     headers
 }
 
-/// The headers that end a session with a DELETE, or nothing when no session was started.
-pub fn end_headers(session: Option<&str>, protocol: Option<&str>) -> Option<Vec<(String, String)>> {
-    session?;
-    Some(session_headers(session, protocol))
+/// A value as a header carries it: as it is when it is plain printable ASCII, otherwise
+/// `=?base64?…?=` around its UTF-8 bytes (and so is a plain value that looks like that form).
+pub fn header_value(text: &str) -> String {
+    let plain = !text.is_empty()
+        && text.trim() == text
+        && text.bytes().all(|b| b == b' ' || b.is_ascii_graphic())
+        && !(text.starts_with("=?base64?") && text.ends_with("?="));
+    if plain {
+        text.to_string()
+    } else {
+        format!("=?base64?{}?=", BASE64.encode(text))
+    }
 }
 
-fn session_headers(session: Option<&str>, protocol: Option<&str>) -> Vec<(String, String)> {
+/// The headers that end a session with a DELETE, or nothing when no session was started (a stateless
+/// connection never has one).
+pub fn end_headers(session: Option<&str>, version: Option<&str>) -> Option<Vec<(String, String)>> {
+    session?;
+    Some(session_headers(session, version))
+}
+
+fn session_headers(session: Option<&str>, version: Option<&str>) -> Vec<(String, String)> {
     let mut headers = Vec::new();
     if let Some(session) = session {
         headers.push((SESSION_HEADER.to_string(), session.to_string()));
     }
-    if let Some(protocol) = protocol {
-        headers.push((PROTOCOL_HEADER.to_string(), protocol.to_string()));
+    if let Some(version) = version {
+        headers.push((PROTOCOL_HEADER.to_string(), version.to_string()));
     }
     headers
 }
@@ -365,41 +438,72 @@ mod tests {
     use serde_json::json;
 
     #[test]
-    fn unsupported_revisions_are_refused() {
+    fn the_server_may_pick_any_handshake_revision_imp_speaks() {
         assert_eq!(
             checked_version(&json!({ "protocolVersion": "2025-03-26" })).unwrap(),
             "2025-03-26"
         );
-        assert_eq!(checked_version(&json!({})).unwrap(), PROTOCOL_VERSION);
+        assert_eq!(checked_version(&json!({})).unwrap(), HANDSHAKE_VERSION);
         assert_eq!(
-            checked_version(&json!({ "protocolVersion": "2025-11-25" })).unwrap_err(),
-            "This server speaks MCP 2025-11-25; Imp speaks 2025-06-18, 2025-03-26, 2024-11-05."
+            checked_version(&json!({ "protocolVersion": "2024-01-01" })).unwrap_err(),
+            "This server speaks MCP 2024-01-01; Imp speaks 2026-07-28, 2025-11-25, 2025-06-18, 2025-03-26, 2024-11-05."
         );
     }
 
     #[test]
-    fn requests_carry_ids_and_methods() {
+    fn handshake_requests_carry_ids_and_methods() {
         let init = initialize_request(1);
         assert_eq!(init["jsonrpc"], "2.0");
         assert_eq!(init["id"], 1);
         assert_eq!(init["method"], "initialize");
-        assert_eq!(init["params"]["protocolVersion"], PROTOCOL_VERSION);
+        assert_eq!(init["params"]["protocolVersion"], HANDSHAKE_VERSION);
         assert_eq!(init["params"]["clientInfo"]["name"], "imp");
         assert_eq!(
             initialized_notification(),
             json!({ "jsonrpc": "2.0", "method": "notifications/initialized" })
         );
-        assert_eq!(tools_list_request(2, None)["params"], json!({}));
         assert_eq!(
-            tools_list_request(3, Some("p2"))["params"],
+            tools_list_request(2, None, "2025-06-18")["params"],
+            json!({})
+        );
+        assert_eq!(
+            tools_list_request(3, Some("p2"), HANDSHAKE_VERSION)["params"],
             json!({ "cursor": "p2" })
         );
-        let call = tools_call_request(4, "add", json!({ "a": 1 }));
+        let call = tools_call_request(4, "add", json!({ "a": 1 }), HANDSHAKE_VERSION);
         assert_eq!(call["method"], "tools/call");
         assert_eq!(
             call["params"],
             json!({ "name": "add", "arguments": { "a": 1 } })
         );
+    }
+
+    #[test]
+    fn stateless_requests_name_the_revision_and_the_client_in_meta() {
+        let discover = discover_request(1);
+        assert_eq!(discover["method"], "server/discover");
+        let meta = &discover["params"]["_meta"];
+        assert_eq!(meta[META_VERSION], STATELESS_VERSION);
+        assert_eq!(meta[META_CAPABILITIES], json!({}));
+        assert_eq!(meta[META_CLIENT]["name"], "imp");
+        let call = tools_call_request(2, "add", json!({ "a": 1 }), STATELESS_VERSION);
+        assert_eq!(call["params"]["name"], "add");
+        assert_eq!(call["params"]["arguments"], json!({ "a": 1 }));
+        assert_eq!(call["params"]["_meta"][META_VERSION], STATELESS_VERSION);
+        let list = tools_list_request(3, Some("p2"), STATELESS_VERSION);
+        assert_eq!(list["params"]["cursor"], "p2");
+        assert!(list["params"]["_meta"].is_object());
+    }
+
+    #[test]
+    fn discovery_finds_the_stateless_revision() {
+        assert!(speaks_stateless(
+            &json!({ "supportedVersions": ["2026-07-28", "2025-11-25"] })
+        ));
+        assert!(!speaks_stateless(
+            &json!({ "supportedVersions": ["2025-11-25"] })
+        ));
+        assert!(!speaks_stateless(&json!({})));
     }
 
     #[test]
@@ -467,15 +571,6 @@ mod tests {
     }
 
     #[test]
-    fn the_server_may_pick_an_older_protocol_version() {
-        assert_eq!(
-            negotiated_version(&json!({ "protocolVersion": "2025-03-26" })),
-            "2025-03-26"
-        );
-        assert_eq!(negotiated_version(&json!({})), PROTOCOL_VERSION);
-    }
-
-    #[test]
     fn tool_pages_follow_cursors_once_and_stop_at_the_limit() {
         let page = tools_page(
             &json!({ "tools": [
@@ -522,6 +617,10 @@ mod tests {
             "ok"
         );
         assert_eq!(tool_result_text(&json!({})), "");
+        assert_eq!(
+            tool_result_text(&json!({ "resultType": "input_required", "inputRequests": {} })),
+            "Error: the tool asked for more input, which Imp cannot give."
+        );
     }
 
     #[test]
@@ -566,7 +665,8 @@ mod tests {
 
     #[test]
     fn sessions_ride_in_headers() {
-        let first = post_headers(None, None);
+        let list = tools_list_request(1, None, HANDSHAKE_VERSION);
+        let first = post_headers(&initialize_request(1), None, None);
         assert!(first.contains(&("Content-Type".to_string(), "application/json".to_string())));
         assert!(first.contains(&(
             "Accept".to_string(),
@@ -577,9 +677,10 @@ mod tests {
                 .iter()
                 .any(|(n, _)| n.eq_ignore_ascii_case(SESSION_HEADER))
         );
-        let later = post_headers(Some("s-7"), Some("2025-03-26"));
+        let later = post_headers(&list, Some("s-7"), Some("2025-03-26"));
         assert!(later.contains(&(SESSION_HEADER.to_string(), "s-7".to_string())));
         assert!(later.contains(&(PROTOCOL_HEADER.to_string(), "2025-03-26".to_string())));
+        assert!(!later.iter().any(|(n, _)| n == METHOD_HEADER));
         assert_eq!(end_headers(None, Some("2025-03-26")), None);
         let end = end_headers(Some("s-7"), Some("2025-03-26")).unwrap();
         assert_eq!(
@@ -589,6 +690,48 @@ mod tests {
                 (PROTOCOL_HEADER.to_string(), "2025-03-26".to_string())
             ]
         );
+    }
+
+    #[test]
+    fn stateless_headers_repeat_the_method_and_the_tool() {
+        let header = |headers: &[(String, String)], name: &str| {
+            headers
+                .iter()
+                .find(|(n, _)| n == name)
+                .map(|(_, v)| v.clone())
+        };
+        let discover = post_headers(&discover_request(1), None, Some(STATELESS_VERSION));
+        assert_eq!(
+            header(&discover, PROTOCOL_HEADER).as_deref(),
+            Some(STATELESS_VERSION)
+        );
+        assert_eq!(
+            header(&discover, METHOD_HEADER).as_deref(),
+            Some("server/discover")
+        );
+        assert_eq!(header(&discover, NAME_HEADER), None);
+        let call = tools_call_request(2, "Hello, 世界", json!({}), STATELESS_VERSION);
+        let headers = post_headers(&call, None, Some(STATELESS_VERSION));
+        assert_eq!(
+            header(&headers, METHOD_HEADER).as_deref(),
+            Some("tools/call")
+        );
+        assert_eq!(
+            header(&headers, NAME_HEADER).as_deref(),
+            Some("=?base64?SGVsbG8sIOS4lueVjA==?=")
+        );
+    }
+
+    #[test]
+    fn header_values_are_plain_or_base64() {
+        assert_eq!(header_value("list_plans"), "list_plans");
+        assert_eq!(header_value("with space"), "with space");
+        assert_eq!(header_value(" padded "), "=?base64?IHBhZGRlZCA=?=");
+        assert_eq!(
+            header_value("=?base64?literal?="),
+            "=?base64?PT9iYXNlNjQ/bGl0ZXJhbD89?="
+        );
+        assert_eq!(header_value(""), "=?base64??=");
     }
 
     #[test]

@@ -55,6 +55,7 @@ The Brain section always shows its page, never a modal. With no service at all t
 - One layout for Settings and an Imp's settings: the same rail, the same pages, the same parts.
 - The built-in tools sit where they act (animations in Animations, its look in Look), so "what may it do" is answered on the page it is about, behind one icon that looks the same everywhere.
 - Tools holds what you add (MCP servers) and, apart, what `~/.agents` has (skills and commands, read only). Nothing built in is mixed into either list.
+- The built-in group **Skills** (the `use_skill` tool) is switched like the other groups. Off, the Imp's system text does not list the skills and the tool is not offered. Typing `/` in the text box lists the custom commands ([Skills and commands in the apps](/apps/skills-commands)).
 
 ## On the iPhone
 
@@ -351,6 +352,7 @@ Share opens the save panel at once, with no sheet before it: the Imp is saved as
 | `tool.set_traits` | Change its look |
 | `tool.show_animation` | View |
 | `tool.show_background` | View background |
+| `tool.use_skill` | Use a skill |
 | `tool.verify` | Check results |
 | `tools.add` | Add |
 | `tools.collapse` | Hide the tools in {group} |

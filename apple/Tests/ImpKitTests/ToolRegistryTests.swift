@@ -44,7 +44,7 @@ import ImpCore
             OwnTools.play, OwnTools.move, OwnTools.createImp, OwnTools.status, OwnTools.page, OwnTools.listTriggers,
             OwnTools.addTrigger, OwnTools.removeTrigger, OwnTools.listTools, OwnTools.addTool, OwnTools.addKit, OwnTools.exportKit, OwnTools.removeTool,
             OwnTools.openSettings, OwnTools.message, OwnTools.openFile, OwnTools.makeAnimation, OwnTools.showAnimation, OwnTools.removeAnimation,
-            OwnTools.setTraits, OwnTools.showBackground, OwnTools.setBackground,
+            OwnTools.setTraits, OwnTools.showBackground, OwnTools.setBackground, OwnTools.useSkill,
         ]).union(ComputerTools.all)
         #expect(swiftNames == Set(ToolRegistry.builtIn.map(\.name)))
         #expect(Set(ToolRegistry.builtIn.map(\.group)) == Set(ImpToolGroup.allCases.map { ToolRegistry.ownGroupID($0) }))

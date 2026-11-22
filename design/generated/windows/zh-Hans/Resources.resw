@@ -137,12 +137,8 @@
   <data name="devices.node.label" xml:space="preserve"><value>{name}，{state}。Imp：{imps}</value><comment>Screen reader label of a device on the map: its state and the Imps in it.</comment></data>
   <data name="devices.node.label_empty" xml:space="preserve"><value>{name}，{state}</value><comment>Screen reader label of a device on the map without Imps.</comment></data>
   <data name="devices.node.this_mac_label" xml:space="preserve"><value>{name}，这台 Mac</value><comment>Screen reader name of this Mac's node.</comment></data>
-  <data name="devices.on_screen" xml:space="preserve"><value>在它的屏幕上</value><comment>Title of the chips of the Imps on a device's screen.</comment></data>
   <data name="devices.place.body" xml:space="preserve"><value>在</value><comment>Where an Imp's body is, as a tag on a device row.</comment></data>
   <data name="devices.place.mind" xml:space="preserve"><value>思考于</value><comment>Where an Imp thinks, as a tag on a device row.</comment></data>
-  <data name="devices.plug.off" xml:space="preserve"><value>未插上</value><comment>Spoken value of a plug that is not plugged in.</comment></data>
-  <data name="devices.plug.on" xml:space="preserve"><value>已插上</value><comment>Spoken value of a plug that is plugged in.</comment></data>
-  <data name="devices.plug.title" xml:space="preserve"><value>{name} 在这里可以用什么</value><comment>Title of the card of plugs: what a linked device can use of this Mac's Imps.</comment></data>
   <data name="devices.reach.at" xml:space="preserve"><value>可通过以下地址访问</value><comment>Title of the addresses this Mac can be reached at.</comment></data>
   <data name="devices.reach.away" xml:space="preserve"><value>不在线</value><comment>Help on a linked device: not reachable now.</comment></data>
   <data name="devices.reach.direct" xml:space="preserve"><value>直连，走本地网络</value><comment>Help on a linked device: reached on the local network.</comment></data>
@@ -170,8 +166,13 @@
   <data name="devices.this.info" xml:space="preserve"><value>在这里连接另一台设备。圆点表示 The Hop 是否让设备能从任何地方互相找到。</value><comment>Help on the This Mac card: the dot is The Hop.</comment></data>
   <data name="devices.this_mac_badge" xml:space="preserve"><value>这台 Mac</value><comment>Badge on the node of this Mac on the Devices map.</comment></data>
   <data name="devices.title" xml:space="preserve"><value>设备</value><comment>Title of the card listing the linked devices.</comment></data>
+  <data name="devices.tool.off" xml:space="preserve"><value>关</value><comment>Spoken state of a tool chip that is switched off.</comment></data>
+  <data name="devices.tool.on" xml:space="preserve"><value>开</value><comment>Spoken state of a tool chip that is switched on.</comment></data>
+  <data name="devices.tools.all_off" xml:space="preserve"><value>全部关闭</value><comment>Tooltip and spoken label of the button that switches every tool of a group off.</comment></data>
+  <data name="devices.tools.all_on" xml:space="preserve"><value>全部开启</value><comment>Tooltip and spoken label of the button that switches every tool of a group on.</comment></data>
+  <data name="devices.tools.built_in" xml:space="preserve"><value>内置</value><comment>Heading of the group of an Imp's built-in tools in a device's tools grid.</comment></data>
   <data name="devices.tools.commands" xml:space="preserve"><value>命令</value><comment>Name of the tool that runs commands.</comment></data>
-  <data name="devices.tools.toggle" xml:space="preserve"><value>显示或隐藏开关</value><comment>Tooltip of the button that opens or closes a list of tool switches.</comment></data>
+  <data name="devices.tools.servers" xml:space="preserve"><value>工具服务器</value><comment>Heading of the group of tools that come from MCP servers in a device's tools grid.</comment></data>
   <data name="devices.unknown_device" xml:space="preserve"><value>未与这台 Mac 链接的设备</value><comment>A device this Mac is not linked with.</comment></data>
   <data name="devices.visitor.can_use" xml:space="preserve"><value>它的设备在这里可用</value><comment>Title of the read-only plugs of the device an Imp comes from.</comment></data>
   <data name="devices.visitor.send_home" xml:space="preserve"><value>送回家</value><comment>Button: send a visiting Imp home.</comment></data>
@@ -781,6 +782,7 @@
   <data name="tool.set_traits" xml:space="preserve"><value>改变外观</value><comment>Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).</comment></data>
   <data name="tool.show_animation" xml:space="preserve"><value>查看</value><comment>Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).</comment></data>
   <data name="tool.show_background" xml:space="preserve"><value>查看背景</value><comment>Short name of a built-in tool in the Look section: reads the HTML background behind the Imps.</comment></data>
+  <data name="tool.use_skill" xml:space="preserve"><value>使用技能</value><comment>Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).</comment></data>
   <data name="tool.verify" xml:space="preserve"><value>检查结果</value><comment>Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).</comment></data>
   <data name="tools.add" xml:space="preserve"><value>添加</value><comment>Button that adds tools.</comment></data>
   <data name="tools.collapse" xml:space="preserve"><value>隐藏 {group} 中的工具</value><comment>Screen reader action.</comment></data>

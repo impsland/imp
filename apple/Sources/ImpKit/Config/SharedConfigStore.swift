@@ -112,7 +112,18 @@ public final class SharedConfigStore: @unchecked Sendable {
     /// The skills and commands in `~/.agents`: the app lists them and does not edit them.
     public func library() -> ConfigLibrary { configLibrary(paths: paths) }
 
+    /// The same skills and commands as the chat uses them (`AgentLibrary`).
+    public var agentLibrary: AgentLibrary { AgentLibrary(paths: paths) }
+
     // MARK: Keys (`auth.json`)
+
+    /// The brain a model reference (`provider/model`, as a command's front matter writes it) names, when the provider is one of the
+    /// app's services. The variant (`#high`) is not a setting of the app and is left out.
+    public func brain(forModelRef text: String) -> Brain? {
+        guard let ref = try? modelRefParse(text: text),
+              let service = lock.withLock({ last.providers.first { $0.value == ref.provider }?.key }) else { return nil }
+        return Brain(service: service, model: ref.model)
+    }
 
     /// The provider a service is, once it is in the files.
     public func providerID(for service: UUID) -> String? { lock.withLock { last.providers[service] } }

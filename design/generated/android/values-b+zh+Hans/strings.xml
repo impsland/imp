@@ -137,12 +137,8 @@
   <string name="devices_node_label">%1$s，%2$s。Imp：%3$s</string>
   <string name="devices_node_label_empty">%1$s，%2$s</string>
   <string name="devices_node_this_mac_label">%1$s，这台 Mac</string>
-  <string name="devices_on_screen">在它的屏幕上</string>
   <string name="devices_place_body">在</string>
   <string name="devices_place_mind">思考于</string>
-  <string name="devices_plug_off">未插上</string>
-  <string name="devices_plug_on">已插上</string>
-  <string name="devices_plug_title">%1$s 在这里可以用什么</string>
   <string name="devices_reach_at">可通过以下地址访问</string>
   <string name="devices_reach_away">不在线</string>
   <string name="devices_reach_direct">直连，走本地网络</string>
@@ -170,8 +166,13 @@
   <string name="devices_this_info">在这里连接另一台设备。圆点表示 The Hop 是否让设备能从任何地方互相找到。</string>
   <string name="devices_this_mac_badge">这台 Mac</string>
   <string name="devices_title">设备</string>
+  <string name="devices_tool_off">关</string>
+  <string name="devices_tool_on">开</string>
+  <string name="devices_tools_all_off">全部关闭</string>
+  <string name="devices_tools_all_on">全部开启</string>
+  <string name="devices_tools_built_in">内置</string>
   <string name="devices_tools_commands">命令</string>
-  <string name="devices_tools_toggle">显示或隐藏开关</string>
+  <string name="devices_tools_servers">工具服务器</string>
   <string name="devices_unknown_device">未与这台 Mac 链接的设备</string>
   <string name="devices_visitor_can_use">它的设备在这里可用</string>
   <string name="devices_visitor_send_home">送回家</string>
@@ -789,6 +790,7 @@
   <string name="tool_set_traits">改变外观</string>
   <string name="tool_show_animation">查看</string>
   <string name="tool_show_background">查看背景</string>
+  <string name="tool_use_skill">使用技能</string>
   <string name="tool_verify">检查结果</string>
   <string name="tools_add">添加</string>
   <string name="tools_collapse">隐藏 %1$s 中的工具</string>

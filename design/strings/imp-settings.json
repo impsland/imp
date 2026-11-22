@@ -1918,5 +1918,11 @@
     "en": "Where the background shows.",
     "es": "Dónde se muestra el fondo.",
     "zh-Hans": "背景显示的位置。"
+  },
+  "tool.use_skill": {
+    "note": "Short name of one of the Imp's built-in tools, in a section's tools sheet (the section says what it acts on).",
+    "en": "Use a skill",
+    "es": "Usar una habilidad",
+    "zh-Hans": "使用技能"
   }
 }

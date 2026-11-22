@@ -2,15 +2,15 @@
 //! taking the parsed arguments and the [`Settings`] and answering with a [`Reply`] (a value for `--json`
 //! and the same thing for people). The terminal prints the reply, and a chat shows it. Nothing here prints.
 
-mod agent;
-mod auth;
+pub(crate) mod agent;
+pub(crate) mod auth;
 mod config;
 mod library;
 mod mcp;
 mod model;
 mod permission;
 mod project;
-mod provider;
+pub(crate) mod provider;
 
 pub use agent::{edit_command, edit_file};
 
