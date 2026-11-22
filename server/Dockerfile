@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM rust:1.99.1-alpine3.24 AS build
+FROM rust:1.100.0-alpine3.24 AS build
 RUN apk add --no-cache musl-dev
 WORKDIR /src
 COPY Cargo.toml Cargo.lock ./
@@ -15,7 +15,7 @@ RUN --mount=type=cache,target=/usr/local/cargo/registry \
     && install -D target/release/den /out/den \
     && install -D target/release/hop /out/hop
 
-FROM alpine:3.24.3
+FROM alpine:3.24.4
 RUN adduser -D -H -u 10001 imp && install -d -o imp -g imp /data
 COPY --from=build /out/den /out/hop /usr/local/bin/
 USER imp
