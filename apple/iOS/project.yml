@@ -13,8 +13,8 @@ packages:
 settings:
   base:
     SWIFT_VERSION: "6.0"
-    MARKETING_VERSION: "3.7.0"
-    CURRENT_PROJECT_VERSION: "37"
+    MARKETING_VERSION: "3.8.0"
+    CURRENT_PROJECT_VERSION: "38"
     DEVELOPMENT_TEAM: ""
     CODE_SIGN_STYLE: Automatic
     # Xcode runs on Apple silicon only, so the Simulator is arm64 too, like the core built for it.

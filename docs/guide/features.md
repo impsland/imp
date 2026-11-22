@@ -116,6 +116,11 @@ the server, the sheet opens and the real tools replace the stand-in. On iPhone t
 Imp is in front. The sign-in is kept with your API keys, in a private file by default or in the
 Keychain if you switch that on.
 
+A picture, a sound or a video an MCP tool makes (an image generator, a voice) is saved in the Imp's folder,
+under `media`, and shows in the chat with a picture or a player, on the Mac and on iPhone. The model only reads
+where the file is, not the file itself, so it costs a line of context. The terminal app saves it in the folder
+the chat was started in.
+
 ## A whole troupe
 
 Run several Imps, each with its own name, colour, personality and model. They share one clock and stop

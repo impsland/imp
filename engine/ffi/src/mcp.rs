@@ -187,10 +187,65 @@ pub fn mcp_tools_page(
     })
 }
 
-/// The text a model reads for the result of `tools/call`.
+/// What `tools/call` returned (`protocol::ToolResult`): text for the model and media for the person.
+#[derive(Debug, Clone, PartialEq, uniffi::Record)]
+pub struct McpToolResult {
+    pub error: bool,
+    pub parts: Vec<McpToolPart>,
+}
+
+#[derive(Debug, Clone, PartialEq, uniffi::Enum)]
+pub enum McpToolPart {
+    Text {
+        text: String,
+    },
+    /// Save `data` at `path` in the Imp's workspace, then give the model `mcp_media_saved`.
+    Media {
+        kind: String,
+        mime_type: String,
+        data: Vec<u8>,
+        path: String,
+    },
+}
+
+/// Reads the result of `tools/call`.
 #[uniffi::export]
-pub fn mcp_tool_result_text(result_json: String) -> Result<String, McpProtocolError> {
-    Ok(protocol::tool_result_text(&json(&result_json)?))
+pub fn mcp_tool_result(result_json: String) -> Result<McpToolResult, McpProtocolError> {
+    let result = protocol::tool_result(&json(&result_json)?);
+    Ok(McpToolResult {
+        error: result.error,
+        parts: result
+            .parts
+            .into_iter()
+            .map(|part| match part {
+                protocol::ToolPart::Text(text) => McpToolPart::Text { text },
+                protocol::ToolPart::Media(m) => McpToolPart::Media {
+                    kind: m.kind.to_string(),
+                    mime_type: m.mime_type,
+                    data: m.data,
+                    path: m.path,
+                },
+            })
+            .collect(),
+    })
+}
+
+/// What the model reads for media saved at `path` (relative to the workspace).
+#[uniffi::export]
+pub fn mcp_media_saved(kind: String, path: String) -> String {
+    protocol::media_saved(&kind, &path)
+}
+
+/// What the model reads for media that could not be saved, and why.
+#[uniffi::export]
+pub fn mcp_media_not_saved(kind: String, problem: String) -> String {
+    protocol::media_not_saved(&kind, &problem)
+}
+
+/// The text a model reads for a result: its lines, after "Error: " when it is an error.
+#[uniffi::export]
+pub fn mcp_tool_text(lines: Vec<String>, error: bool) -> String {
+    protocol::tool_text(&lines, error)
 }
 
 /// The tools of several servers as the model is offered them, servers in name order.

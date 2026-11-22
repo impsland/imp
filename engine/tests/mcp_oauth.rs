@@ -188,6 +188,7 @@ async fn a_den_signs_the_core_in_and_accepts_a_write() {
             "publish_item",
             json!({ "type": "imp", "slug": slug, "summary": "Published by the core's OAuth test",
                 "tags": ["e2e"], "document": { "format": 1, "name": format!("Core {slug}"), "imps": [{ "name": "Zed" }] } }),
+            &std::env::temp_dir(),
         )
         .await
         .unwrap();

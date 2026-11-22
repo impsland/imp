@@ -91,7 +91,9 @@ fn folder() -> PathBuf {
 async fn a_plain_chat_streams_an_answer() {
     let Some(env) = live() else { return };
     let (client, model) = client(&env);
-    let host = McpHost::connect(&[], Duration::from_secs(5)).await.0;
+    let host = McpHost::connect(&[], Duration::from_secs(5), &std::env::temp_dir())
+        .await
+        .0;
     let mut messages = vec![ChatMessage::new(
         Role::User,
         "Reply with exactly the word: pong",
@@ -182,7 +184,8 @@ async fn an_imp_draws_and_speaks_with_its_tools() {
         ),
         server(&env, "tts", "@dtst/tts", &dir, &speech),
     ];
-    let (host, problems) = McpHost::connect(&specs, Duration::from_secs(120)).await;
+    let (host, problems) =
+        McpHost::connect(&specs, Duration::from_secs(120), &std::env::temp_dir()).await;
     assert!(problems.is_empty(), "{problems:?}");
 
     let mut messages = vec![

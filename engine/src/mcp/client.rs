@@ -12,6 +12,7 @@ use crate::agent::{BoxFuture, HostTool, ToolHost};
 use crate::chat::ToolSpec;
 use crate::tools::ToolEntry;
 use serde_json::Value;
+use std::path::{Path, PathBuf};
 use std::process::Stdio;
 use std::rc::Rc;
 use std::sync::atomic::{AtomicU64, Ordering};
@@ -375,19 +376,55 @@ impl McpClient {
         }
     }
 
-    /// Calls a tool and returns its text. An error the tool reports comes back as text starting
-    /// with "Error:", so the model can read it. Failures of the server itself are errors.
-    pub async fn call_tool(&self, name: &str, arguments: Value) -> Result<String, McpError> {
+    /// Calls a tool and returns the text the model reads. Pictures, sound and other files it hands
+    /// back are saved in `workspace` (see [`save_tool_result`]). An error the tool reports comes back
+    /// as text starting with "Error:", so the model can read it. Failures of the server itself are errors.
+    pub async fn call_tool(
+        &self,
+        name: &str,
+        arguments: Value,
+        workspace: &Path,
+    ) -> Result<String, McpError> {
         let id = self.next_id();
         let message = protocol::tools_call_request(id, name, arguments, &self.version);
         let result = self.exchange(id, &message).await?;
-        Ok(protocol::tool_result_text(&result))
+        Ok(save_tool_result(&result, workspace))
     }
+}
+
+/// The text the model reads for the result of `tools/call`, with each medium saved in `workspace`
+/// at the path [`protocol::tool_result`] gives it and named by that path, never by its bytes.
+pub fn save_tool_result(result: &Value, workspace: &Path) -> String {
+    let result = protocol::tool_result(result);
+    let lines: Vec<String> = result
+        .parts
+        .into_iter()
+        .map(|part| match part {
+            protocol::ToolPart::Text(text) => text,
+            protocol::ToolPart::Media(media) => {
+                let file = workspace.join(&media.path);
+                let written = file
+                    .parent()
+                    .map_or(Ok(()), std::fs::create_dir_all)
+                    .and_then(|()| {
+                        use std::io::Write as _;
+                        std::fs::File::create_new(&file)?.write_all(&media.data)
+                    });
+                match written {
+                    Ok(()) => protocol::media_saved(media.kind, &media.path),
+                    Err(e) => protocol::media_not_saved(media.kind, &e.to_string()),
+                }
+            }
+        })
+        .collect();
+    protocol::tool_text(&lines, result.error)
 }
 
 /// The tools of several MCP servers, as one [`ToolHost`].
 pub struct McpHost {
     clients: Vec<McpClient>,
+    /// Where media the tools hand back is saved: the folder relative paths are read from.
+    workspace: PathBuf,
     /// Client index, the server's own tool name, and the tool as offered.
     tools: Vec<(usize, String, HostTool)>,
 }
@@ -395,14 +432,20 @@ pub struct McpHost {
 impl McpHost {
     /// Connects to every server. Those that fail are skipped, each with a plain sentence in the
     /// second part of the result.
-    pub async fn connect(specs: &[McpServerSpec], timeout: Duration) -> (Self, Vec<String>) {
-        Self::connect_with(specs, timeout, None).await
+    /// Media the tools hand back is saved in `workspace`.
+    pub async fn connect(
+        specs: &[McpServerSpec],
+        timeout: Duration,
+        workspace: &Path,
+    ) -> (Self, Vec<String>) {
+        Self::connect_with(specs, timeout, workspace, None).await
     }
 
     /// Like [`Self::connect`], with sign-in for servers that ask for it.
     pub async fn connect_with(
         specs: &[McpServerSpec],
         timeout: Duration,
+        workspace: &Path,
         auth: Option<Rc<dyn McpSignIn>>,
     ) -> (Self, Vec<String>) {
         let mut clients = Vec::new();
@@ -464,7 +507,14 @@ impl McpHost {
                 ))
             })
             .collect();
-        (Self { clients, tools }, problems)
+        (
+            Self {
+                clients,
+                workspace: workspace.to_path_buf(),
+                tools,
+            },
+            problems,
+        )
     }
 
     /// Ends the sessions of the servers that have one. A server that refuses is left to time the
@@ -488,10 +538,15 @@ impl ToolHost for McpHost {
                 Ok(v) => v,
                 Err(e) => return Some(format!("Error: {e}")),
             };
-            Some(match self.clients[*index].call_tool(tool, args).await {
-                Ok(text) => text,
-                Err(e) => format!("Error: {e}"),
-            })
+            Some(
+                match self.clients[*index]
+                    .call_tool(tool, args, &self.workspace)
+                    .await
+                {
+                    Ok(text) => text,
+                    Err(e) => format!("Error: {e}"),
+                },
+            )
         })
     }
 }

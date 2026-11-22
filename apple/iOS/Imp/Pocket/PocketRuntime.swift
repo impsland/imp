@@ -530,7 +530,7 @@ final class PocketRuntime {
             }
             if let step { tell(id, .animate(imp: id, beats: [AnimationBeat(step)])) }
         case .file(let transfer, _, let from):
-            // A pocket Imp has no folder: what its replies show is on the web, which the holder loads itself.
+            // A pocket Imp's files (what its MCP tools made) stay on this iPhone: the holder loads web ones itself.
             hub.node.send(.fileFailed(id: transfer, reason: String(localized: "That file isn't on this iPhone.")), to: from)
         case .talks(let id, let from):
             let lines = talkLines.filter { $0.asker.id == id || $0.answerer.id == id }

@@ -157,7 +157,7 @@ final class Assistant {
                                                     apiKey: try service.map { try key(for: $0) }, model: ai.model(in: imp.brain))
             members.append(ShellTool(directory: directory, environment: environment))
         }
-        if !imp.servers.isEmpty { members.append(MCPScope(hub: hub, servers: Set(imp.servers))) }
+        if !imp.servers.isEmpty { members.append(MCPScope(hub: hub, servers: Set(imp.servers), workspace: Workspace.directory(for: imp.id))) }
         members.append(ComputerToolHost(control: computerControl(for: imp.id)))
         if let skills = config?.agentLibrary.skillTools { members.append(skills) }
         // What is switched off for the Imp (groups and single tools) is applied here, once.

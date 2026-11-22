@@ -148,7 +148,9 @@ async fn initialize_list_and_call_over_json_and_event_streams() {
         ["echo", "delete"]
     );
     assert_eq!(tools[1].input_schema, json!({ "type": "object" }));
-    let text = client.call_tool("echo", json!({ "text": "hi" })).await;
+    let text = client
+        .call_tool("echo", json!({ "text": "hi" }), &std::env::temp_dir())
+        .await;
     assert_eq!(text.unwrap(), "echo: hi");
 
     let seen = seen.lock().unwrap();
@@ -196,7 +198,9 @@ async fn a_stateless_server_gets_no_handshake_and_no_session() {
         .await
         .unwrap();
     assert_eq!(client.list_tools().await.unwrap().len(), 2);
-    let text = client.call_tool("echo", json!({ "text": "hi" })).await;
+    let text = client
+        .call_tool("echo", json!({ "text": "hi" }), &std::env::temp_dir())
+        .await;
     assert_eq!(text.unwrap(), "echo: hi");
     client.close().await.unwrap();
 
@@ -311,7 +315,8 @@ async fn a_switched_off_tool_is_not_offered_and_headers_are_not_shown() {
     let shown = format!("{s:?}");
     assert!(shown.contains("Authorization"));
     assert!(!shown.contains("fake-token-123"));
-    let (host, problems) = McpHost::connect(&[s], Duration::from_secs(5)).await;
+    let (host, problems) =
+        McpHost::connect(&[s], Duration::from_secs(5), &std::env::temp_dir()).await;
     assert!(problems.is_empty(), "{problems:?}");
     let selection = ToolSelection {
         tools_off: ["mcp.web.delete".to_string()].into(),

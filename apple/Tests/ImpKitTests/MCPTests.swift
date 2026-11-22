@@ -1,6 +1,7 @@
 import Foundation
 import Testing
 @testable import ImpKit
+import ImpCore
 
 private let fakeServer = #"""
 import sys, json
@@ -18,7 +19,7 @@ for line in sys.stdin:
             r = {"tools": [{"name": "add", "description": "Adds", "inputSchema": {"type": "object", "properties": {"a": {"type": "number"}}}}], "nextCursor": "p2"}
     elif m == "tools/call":
         a = msg["params"]["arguments"]
-        r = {"content": [{"type": "text", "text": "sum=%s" % (a["a"] + a["b"])}, {"type": "image", "data": "x", "mimeType": "image/png"}], "isError": msg["params"]["name"] == "second"}
+        r = {"content": [{"type": "text", "text": "sum=%s" % (a["a"] + a["b"])}, {"type": "image", "data": "iVBORw==", "mimeType": "image/png"}], "isError": msg["params"]["name"] == "second"}
     else:
         sys.stdout.write(json.dumps({"jsonrpc": "2.0", "id": i, "error": {"code": -32601, "message": "nope"}}) + "\n"); sys.stdout.flush(); continue
     sys.stdout.write(json.dumps({"jsonrpc": "2.0", "id": i, "result": r}) + "\n"); sys.stdout.flush()
@@ -161,7 +162,7 @@ final class McpStub: URLProtocol, @unchecked Sendable {
         let client = try MCPClient(config: server, auth: nil, session: URLSession(configuration: config))
         try await client.connect()
         #expect(try await client.listTools().map(\.name) == ["add"])
-        #expect(try await client.callTool(name: "add", arguments: ["a": 2]) == "5")
+        #expect(try await client.callTool(name: "add", arguments: ["a": 2], workspace: FileManager.default.temporaryDirectory) == "5")
         await client.close()
         let seen = McpStub.seen
         #expect(seen.map { $0.value(forHTTPHeaderField: "Mcp-Method") } == ["server/discover", "tools/list", "tools/call"])
@@ -210,9 +211,14 @@ final class McpStub: URLProtocol, @unchecked Sendable {
         let tools = try await client.listTools()
         #expect(tools.map(\.name) == ["add", "second"])
         #expect(tools[0].inputSchema["properties"]?["a"] != nil)
-        let out = try await client.callTool(name: "add", arguments: ["a": 2, "b": 3])
-        #expect(out == "sum=5\n[image]")
-        #expect(try await client.callTool(name: "second", arguments: ["a": 1, "b": 1]).hasPrefix("Error: "))
+        let workspace = FileManager.default.temporaryDirectory.appendingPathComponent("imp-mcp-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: workspace) }
+        // The picture is saved in the workspace, and the model reads where, never the bytes.
+        let out = try await client.callTool(name: "add", arguments: ["a": 2, "b": 3], workspace: workspace)
+        let path = try #require(out.firstMatch(of: /\[image saved as (media\/image-[0-9a-f]{8}\.png)\. To show it, put !\[what it is\]\(\1\) in your reply\]/)?.1)
+        #expect(out == "sum=5\n" + mcpMediaSaved(kind: "image", path: String(path)))
+        #expect(try Data(contentsOf: workspace.appendingPathComponent(String(path))) == Data([0x89, 0x50, 0x4E, 0x47]))
+        #expect(try await client.callTool(name: "second", arguments: ["a": 1, "b": 1], workspace: workspace).hasPrefix("Error: "))
         await client.close()
     }
 
@@ -254,7 +260,7 @@ final class McpStub: URLProtocol, @unchecked Sendable {
         await hub.update([config])
         let tools = await hub.tools()
         #expect(tools.map(\.name) == ["my_srv__add", "my_srv__second"])
-        #expect(try await hub.call("my_srv__add", arguments: #"{"a":1,"b":1}"#).hasPrefix("sum=2"))
+        #expect(try await hub.call("my_srv__add", arguments: #"{"a":1,"b":1}"#, workspace: FileManager.default.temporaryDirectory).hasPrefix("sum=2"))
         guard case .ready(let count, _) = await hub.status[config.id] else { Issue.record("not ready"); return }
         #expect(count == 2)
         var disabled = config; disabled.isEnabled = false

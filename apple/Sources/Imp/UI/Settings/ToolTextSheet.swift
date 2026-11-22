@@ -7,7 +7,7 @@ extension AppModel {
     /// only offered while other Imps are out) and the tools of its MCP servers. No key is read.
     func toolTextRows(for imp: ImpProfile) async -> [ToolTextRow] {
         var members: [ToolProvider] = [ImpTools(host: OwnToolHost(app: self, imp: imp.id, messaging: true), editing: true)]
-        if !imp.servers.isEmpty { members.append(MCPScope(hub: assistant.hub, servers: Set(imp.servers))) }
+        if !imp.servers.isEmpty { members.append(MCPScope(hub: assistant.hub, servers: Set(imp.servers), workspace: Workspace.directory(for: imp.id))) }
         return await ToolSet(members, selection: imp.toolSelection).allTextRows()
     }
 }

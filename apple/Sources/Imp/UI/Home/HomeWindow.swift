@@ -117,10 +117,13 @@ final class HomeWindow {
             w.isReleasedWhenClosed = false
             w.setFrameAutosaveName("ImpHome")
             if !w.setFrameUsingName("ImpHome") { w.center() }
-            // Closed means gone: drop the views so nothing keeps animating in a hidden window. Imp stays
-            // in the Dock, and activated Imps don't care: they live on the desktop.
+            // Closed means gone: drop the views so nothing keeps animating in a hidden window, and leave
+            // the Dock and the ⌘-Tab switcher. Activated Imps don't care: they live on the desktop.
             NotificationCenter.default.addObserver(forName: NSWindow.willCloseNotification, object: w, queue: .main) { _ in
-                MainActor.assumeIsolated { SystemStatus.shared.stop() }
+                MainActor.assumeIsolated {
+                    SystemStatus.shared.stop()
+                    NSApp.setActivationPolicy(.accessory)
+                }
                 Task { @MainActor in HomeWindow.shared.window = nil }
             }
             // Hidden behind other windows or minimised: the stage stops animating.
@@ -138,18 +141,21 @@ final class HomeWindow {
         if let window { bringToFront(window) }
     }
 
-    /// Opens the window in front of everything.
+    /// Opens the window in front of everything. While the window is open, Imp is a regular app
+    /// (in the Dock and the ⌘-Tab switcher).
     ///
     /// Without the steps below it opens behind other windows. Since macOS 14, activation is cooperative:
     /// the system lets an app come forward only when the request comes from the user's own click or key
     /// press *in that app*. Imp's menu bar panel, its Imps and their bubbles are non-activating
     /// panels (so typing elsewhere is never interrupted), and several callers act a moment after the
     /// click (a double-click is only known once the click burst is over, ~0.3 s later, the Imp's menu
-    /// runs its header buttons once the menu has closed). Either made `activate()` a no-op, and
+    /// runs its header buttons once the menu has closed), and switching from accessory to regular
+    /// takes effect a run-loop turn later. Any of these made `activate()` a no-op, and
     /// `makeKeyAndOrderFront` then only ordered the window to the front of *Imp's* windows, behind
     /// the app you were in. So: order it front regardless of activation, pull it onto the Space
-    /// you're on, and ask once more on the next run-loop turn.
+    /// you're on, and ask again once the policy change has landed.
     private func bringToFront(_ window: NSWindow) {
+        NSApp.setActivationPolicy(.regular)
         window.collectionBehavior.insert(.moveToActiveSpace)
         NSApp.activate()
         let front = window.attachedSheet ?? window
@@ -157,7 +163,7 @@ final class HomeWindow {
         window.orderFrontRegardless()                     // above other apps' windows even if activation was declined
         guard !NSApp.isActive else { return }
         Task { @MainActor in
-            await Task.yield()
+            await Task.yield()                            // the switch to a regular app has taken effect
             guard window.isVisible, !NSApp.isActive else { return }
             NSApp.activate()
             window.orderFrontRegardless()

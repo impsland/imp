@@ -222,29 +222,201 @@ pub fn tools_page(result: &Value, seen: &[String]) -> ToolPage {
     ToolPage { tools, next_cursor }
 }
 
-/// The text a model reads for the result of a tool call. Content that is not text is named in
-/// brackets. A result the tool marks as an error starts with "Error:", and so does a stateless result
-/// that asks for more input (Imp offers no elicitation, so it has none to give).
-pub fn tool_result_text(result: &Value) -> String {
+/// What a tool call returned, in order: text the model reads and media (pictures, sound, video,
+/// other files) for the person. A result the tool marks as an error is `error`, and so is a
+/// stateless result that asks for more input (Imp offers no elicitation, so it has none to give).
+#[derive(Debug, Clone, PartialEq)]
+pub struct ToolResult {
+    pub error: bool,
+    pub parts: Vec<ToolPart>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum ToolPart {
+    Text(String),
+    Media(ToolMedia),
+}
+
+/// A file a tool handed back. The caller saves `data` at `path` in the Imp's workspace (the folder
+/// relative paths in replies are read from) and tells the model where with [`media_saved`]. The
+/// model reads the path only, never the bytes: it shows the file by embedding it in its reply, and
+/// can open it with a tool when it needs to look.
+#[derive(Debug, Clone, PartialEq)]
+pub struct ToolMedia {
+    /// `image`, `audio`, `video` or `file`.
+    pub kind: &'static str,
+    pub mime_type: String,
+    pub data: Vec<u8>,
+    /// Where to save it, relative to the workspace: `media/<kind>-<8 hex>.<extension>`.
+    pub path: String,
+}
+
+/// The folder in the workspace that media from tools is saved in.
+pub const MEDIA_FOLDER: &str = "media";
+
+/// Reads the result of `tools/call`. Base64 that does not decode becomes a note, not media.
+pub fn tool_result(result: &Value) -> ToolResult {
     if result["resultType"] == "input_required" {
-        return "Error: the tool asked for more input, which Imp cannot give.".to_string();
+        return ToolResult {
+            error: true,
+            parts: vec![ToolPart::Text(
+                "the tool asked for more input, which Imp cannot give.".to_string(),
+            )],
+        };
     }
-    let parts: Vec<String> = result["content"]
+    let parts = result["content"]
         .as_array()
         .into_iter()
         .flatten()
         .map(|item| match item["type"].as_str().unwrap_or("unknown") {
-            "text" => item["text"].as_str().unwrap_or_default().to_string(),
-            "resource" => item["resource"]["text"]
-                .as_str()
-                .unwrap_or("[resource]")
-                .to_string(),
-            "resource_link" => format!("[resource: {}]", item["uri"].as_str().unwrap_or_default()),
-            other => format!("[{other}]"),
+            "text" => ToolPart::Text(item["text"].as_str().unwrap_or_default().to_string()),
+            "image" => media(
+                "image",
+                item["mimeType"].as_str(),
+                item["data"].as_str(),
+                None,
+            ),
+            "audio" => media(
+                "audio",
+                item["mimeType"].as_str(),
+                item["data"].as_str(),
+                None,
+            ),
+            "resource" => {
+                let resource = &item["resource"];
+                if let Some(text) = resource["text"].as_str() {
+                    ToolPart::Text(text.to_string())
+                } else if let Some(blob) = resource["blob"].as_str() {
+                    let mime = resource["mimeType"].as_str();
+                    let kind = media_kind(mime.unwrap_or_default());
+                    media(kind, mime, Some(blob), resource["uri"].as_str())
+                } else {
+                    ToolPart::Text("[resource]".to_string())
+                }
+            }
+            "resource_link" => ToolPart::Text(format!(
+                "[resource: {}]",
+                item["uri"].as_str().unwrap_or_default()
+            )),
+            other => ToolPart::Text(format!("[{other}]")),
         })
         .collect();
-    let text = parts.join("\n");
-    if result["isError"].as_bool() == Some(true) {
+    ToolResult {
+        error: result["isError"].as_bool() == Some(true),
+        parts,
+    }
+}
+
+fn media(
+    kind: &'static str,
+    mime: Option<&str>,
+    data: Option<&str>,
+    uri: Option<&str>,
+) -> ToolPart {
+    let compact: String = data
+        .unwrap_or_default()
+        .chars()
+        .filter(|c| !c.is_ascii_whitespace())
+        .collect();
+    let data = match BASE64.decode(compact.as_bytes()) {
+        Ok(data) if !data.is_empty() => data,
+        _ => return ToolPart::Text(format!("[{kind} whose data could not be read]")),
+    };
+    let mime_type = mime
+        .map(|m| {
+            m.split(';')
+                .next()
+                .unwrap_or_default()
+                .trim()
+                .to_ascii_lowercase()
+        })
+        .filter(|m| !m.is_empty())
+        .unwrap_or_else(|| "application/octet-stream".to_string());
+    let extension = media_extension(&mime_type, uri);
+    let path = format!(
+        "{MEDIA_FOLDER}/{kind}-{:08x}.{extension}",
+        rand::random::<u32>()
+    );
+    ToolPart::Media(ToolMedia {
+        kind,
+        mime_type,
+        data,
+        path,
+    })
+}
+
+/// `image`, `audio`, `video` or `file`, by MIME type.
+pub fn media_kind(mime: &str) -> &'static str {
+    match mime.split('/').next().unwrap_or_default() {
+        "image" => "image",
+        "audio" => "audio",
+        "video" => "video",
+        _ => "file",
+    }
+}
+
+/// The extension a file of this MIME type is saved with: the usual one, else the one of the
+/// resource's URI, else `bin`.
+fn media_extension(mime: &str, uri: Option<&str>) -> String {
+    let known = match mime {
+        "image/png" => "png",
+        "image/jpeg" | "image/jpg" => "jpg",
+        "image/webp" => "webp",
+        "image/gif" => "gif",
+        "image/svg+xml" => "svg",
+        "image/heic" => "heic",
+        "audio/wav" | "audio/x-wav" | "audio/wave" | "audio/vnd.wave" => "wav",
+        "audio/mpeg" | "audio/mp3" => "mp3",
+        "audio/mp4" | "audio/m4a" | "audio/x-m4a" => "m4a",
+        "audio/aac" => "aac",
+        "audio/flac" | "audio/x-flac" => "flac",
+        "audio/ogg" | "audio/opus" => "ogg",
+        "audio/webm" | "video/webm" => "webm",
+        "audio/aiff" | "audio/x-aiff" => "aiff",
+        "audio/pcm" | "audio/l16" => "pcm",
+        "video/mp4" => "mp4",
+        "video/quicktime" => "mov",
+        "application/pdf" => "pdf",
+        "application/json" => "json",
+        "text/plain" => "txt",
+        "text/csv" => "csv",
+        "text/markdown" => "md",
+        "text/html" => "html",
+        _ => "",
+    };
+    if !known.is_empty() {
+        return known.to_string();
+    }
+    uri.and_then(|u| u.split(['?', '#']).next())
+        .and_then(|u| u.rsplit('/').next())
+        .and_then(|name| name.rsplit_once('.'))
+        .map(|(_, ext)| ext.to_ascii_lowercase())
+        .filter(|ext| {
+            (1..=5).contains(&ext.len()) && ext.bytes().all(|b| b.is_ascii_alphanumeric())
+        })
+        .unwrap_or_else(|| "bin".to_string())
+}
+
+/// What the model reads for media saved at `path`: where it is and, for what a reply can show,
+/// how to show it.
+pub fn media_saved(kind: &str, path: &str) -> String {
+    if kind == "file" {
+        format!("[file saved as {path}]")
+    } else {
+        format!("[{kind} saved as {path}. To show it, put ![what it is]({path}) in your reply]")
+    }
+}
+
+/// What the model reads for media that could not be saved.
+pub fn media_not_saved(kind: &str, problem: &str) -> String {
+    format!("[{kind} that could not be saved: {problem}]")
+}
+
+/// The text a model reads for a result: its lines (the text parts, and a note for each medium)
+/// one per line, after "Error: " when the result is an error.
+pub fn tool_text(lines: &[String], error: bool) -> String {
+    let text = lines.join("\n");
+    if error {
         format!("Error: {text}")
     } else {
         text
@@ -599,28 +771,102 @@ mod tests {
     }
 
     #[test]
-    fn tool_results_become_text() {
+    fn tool_results_are_text_and_media() {
+        let png = BASE64.encode(b"\x89PNG");
         let result = json!({ "content": [
             { "type": "text", "text": "a" },
-            { "type": "image", "data": "x" },
+            { "type": "image", "data": png, "mimeType": "image/png" },
+            { "type": "audio", "data": "UklG\nRg==", "mimeType": "audio/wav; rate=24000" },
+            { "type": "image", "data": "%%" },
             { "type": "resource", "resource": { "text": "r" } },
+            { "type": "resource", "resource": { "uri": "x:/a/report.PDF?v=1", "blob": png } },
+            { "type": "resource", "resource": { "blob": png, "mimeType": "video/mp4" } },
             { "type": "resource", "resource": {} },
             { "type": "resource_link", "uri": "file:///x" },
             { "text": "typeless" },
         ], "isError": true });
+        let read = tool_result(&result);
+        assert!(read.error);
+        let media: Vec<&ToolMedia> = read
+            .parts
+            .iter()
+            .filter_map(|p| {
+                if let ToolPart::Media(m) = p {
+                    Some(m)
+                } else {
+                    None
+                }
+            })
+            .collect();
+        let described: Vec<(&str, &str, &str)> = media
+            .iter()
+            .map(|m| {
+                (
+                    m.kind,
+                    m.mime_type.as_str(),
+                    m.path.rsplit('.').next().unwrap(),
+                )
+            })
+            .collect();
         assert_eq!(
-            tool_result_text(&result),
-            "Error: a\n[image]\nr\n[resource]\n[resource: file:///x]\n[unknown]"
+            described,
+            [
+                ("image", "image/png", "png"),
+                ("audio", "audio/wav", "wav"),
+                ("file", "application/octet-stream", "pdf"),
+                ("video", "video/mp4", "mp4"),
+            ]
+        );
+        assert_eq!(media[0].data, b"\x89PNG");
+        assert_eq!(media[1].data, b"RIFF", "whitespace in base64 is skipped");
+        assert!(
+            media[0].path.starts_with("media/image-")
+                && media[0].path.len() == "media/image-12345678.png".len()
+        );
+        let lines: Vec<String> = read
+            .parts
+            .iter()
+            .map(|p| match p {
+                ToolPart::Text(t) => t.clone(),
+                ToolPart::Media(m) => format!("<{}>", m.kind),
+            })
+            .collect();
+        assert_eq!(
+            tool_text(&lines, read.error),
+            "Error: a\n<image>\n<audio>\n[image whose data could not be read]\nr\n<file>\n<video>\n[resource]\n[resource: file:///x]\n[unknown]"
         );
         assert_eq!(
-            tool_result_text(&json!({ "content": [{ "type": "text", "text": "ok" }] })),
-            "ok"
+            tool_result(&json!({})),
+            ToolResult {
+                error: false,
+                parts: vec![]
+            }
         );
-        assert_eq!(tool_result_text(&json!({})), "");
+        let asked = tool_result(&json!({ "resultType": "input_required", "inputRequests": {} }));
+        assert!(asked.error);
         assert_eq!(
-            tool_result_text(&json!({ "resultType": "input_required", "inputRequests": {} })),
-            "Error: the tool asked for more input, which Imp cannot give."
+            asked.parts,
+            [ToolPart::Text(
+                "the tool asked for more input, which Imp cannot give.".into()
+            )]
         );
+    }
+
+    #[test]
+    fn the_model_reads_where_media_is_and_how_to_show_it() {
+        assert_eq!(
+            media_saved("image", "media/image-0a.png"),
+            "[image saved as media/image-0a.png. To show it, put ![what it is](media/image-0a.png) in your reply]"
+        );
+        assert_eq!(
+            media_saved("file", "media/file-0a.pdf"),
+            "[file saved as media/file-0a.pdf]"
+        );
+        assert_eq!(
+            media_not_saved("audio", "disk full"),
+            "[audio that could not be saved: disk full]"
+        );
+        assert_eq!(tool_text(&["ok".into()], false), "ok");
     }
 
     #[test]

@@ -11,8 +11,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private let log = Logger(subsystem: "app.imp.Imp", category: "app")
 
     func applicationWillFinishLaunching(_ notification: Notification) {
-        // Imp is a regular app: it is in the Dock and the ⌘-Tab switcher for as long as it runs.
-        NSApp.setActivationPolicy(.regular)
+        // Imp is in the Dock and the ⌘-Tab switcher only while its window is open (`HomeWindow`): its Imps
+        // live on the desktop without it. Opening Imp.app again (Finder, Spotlight) brings the window back.
+        NSApp.setActivationPolicy(.accessory)
         NSAppleEventManager.shared().setEventHandler(self, andSelector: #selector(handleURL(_:reply:)),
                                                      forEventClass: AEEventClass(kInternetEventClass),
                                                      andEventID: AEEventID(kAEGetURL))

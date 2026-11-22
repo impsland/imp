@@ -10,7 +10,8 @@ public enum MCPStatus: Hashable, Sendable {
 }
 
 /// Owns one client per enabled server and exposes all their tools to the model.
-public actor MCPHub: ToolProvider {
+/// One Imp's view of it, which runs the tools, is `MCPScope`.
+public actor MCPHub {
     private struct Entry {
         var config: MCPServerConfig
         var client: MCPClient?
@@ -169,7 +170,8 @@ public actor MCPHub: ToolProvider {
         }
     }
 
-    public func call(_ name: String, arguments: String) async throws -> String {
+    /// Runs a tool. Media it hands back is saved in `workspace`, the calling Imp's folder.
+    public func call(_ name: String, arguments: String, workspace: URL) async throws -> String {
         guard let target = exposed().first(where: { $0.spec.name == name }) else {
             throw MCPError.badConfig("Unknown tool \(name).")
         }
@@ -180,7 +182,7 @@ public actor MCPHub: ToolProvider {
             throw MCPError.badConfig("Unknown tool \(name).")
         }
         do {
-            return try await client.callTool(name: target.tool, argumentsJSON: arguments)
+            return try await client.callTool(name: target.tool, argumentsJSON: arguments, workspace: workspace)
         } catch MCPError.needsSignIn {
             // Ask the person to sign in (they can cancel), then try the call once more.
             guard let config = entries[target.server]?.config, let signIn else {
@@ -190,7 +192,7 @@ public actor MCPHub: ToolProvider {
                 throw MCPError.signInRequired(server: config.name)
             }
             do {
-                return try await client.callTool(name: target.tool, argumentsJSON: arguments)
+                return try await client.callTool(name: target.tool, argumentsJSON: arguments, workspace: workspace)
             } catch MCPError.needsSignIn {
                 throw MCPError.signInRequired(server: config.name)
             }
@@ -291,9 +293,11 @@ public actor MCPHub: ToolProvider {
 public struct MCPScope: ToolProvider {
     public let hub: MCPHub
     public let servers: Set<UUID>
+    /// The Imp's folder: media the tools hand back is saved there.
+    public let workspace: URL
 
-    public init(hub: MCPHub, servers: Set<UUID>) {
-        self.hub = hub; self.servers = servers
+    public init(hub: MCPHub, servers: Set<UUID>, workspace: URL) {
+        self.hub = hub; self.servers = servers; self.workspace = workspace
     }
 
     public func tools() async -> [ToolSpec] { await hub.tools(from: servers) }
@@ -301,6 +305,6 @@ public struct MCPScope: ToolProvider {
 
     public func call(_ name: String, arguments: String) async throws -> String {
         guard await tools().contains(where: { $0.name == name }) else { throw MCPError.badConfig("Unknown tool \(name).") }
-        return try await hub.call(name, arguments: arguments)
+        return try await hub.call(name, arguments: arguments, workspace: workspace)
     }
 }

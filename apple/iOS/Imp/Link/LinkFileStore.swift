@@ -57,6 +57,8 @@ final class LinkFileStore {
 
     /// Already here from an earlier fetch.
     func cached(imp: UUID, ref: String) -> URL? {
+        // A pocket Imp's media lives on this iPhone (`PocketBrain.mediaFolder`).
+        if let url = PocketBrain.localMedia(ref, imp: imp) { return url }
         let folder = Self.folder(for: Self.key(imp: imp, ref: ref))
         let files = (try? FileManager.default.contentsOfDirectory(at: folder, includingPropertiesForKeys: nil)) ?? []
         return files.first { !$0.lastPathComponent.hasPrefix(".") }

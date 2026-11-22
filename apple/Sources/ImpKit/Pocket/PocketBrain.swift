@@ -58,6 +58,21 @@ public struct PocketBrain: Sendable {
     /// How long a request may take and how it is retried.
     public let limits: RequestLimits
 
+    /// A pocket Imp's only folder: the pictures, sounds and files its MCP tools hand back, which its
+    /// replies show by their paths relative to it (`media/…`). It has no workspace besides.
+    public static func mediaFolder(for imp: UUID) -> URL {
+        URL.applicationSupportDirectory.appending(path: "pocket-media/\(imp.uuidString)", directoryHint: .isDirectory)
+    }
+
+    /// The file a pocket Imp's reply shows (`ref` as written), when it is in its media folder on this iPhone.
+    public static func localMedia(_ ref: String, imp: UUID) -> URL? {
+        let folder = mediaFolder(for: imp)
+        guard !LinkFiles.isWeb(ref), !WorkspaceReference.isReference(ref),
+              let url = LinkFiles.resolve(ref, base: folder), LinkFiles.isInside(url, folder: folder),
+              FileManager.default.fileExists(atPath: url.path(percentEncoded: false)) else { return nil }
+        return url
+    }
+
     public init(secrets: PocketSecrets, session: URLSession = .shared, limits: RequestLimits = .standard) {
         self.secrets = secrets; self.session = session; self.limits = limits
     }
@@ -111,7 +126,7 @@ public struct PocketBrain: Sendable {
             await hub.setSignIn(Self.signIn)
             await hub.update(configs)
             var tools: [ToolProvider] = []
-            if !configs.isEmpty { tools.append(hub) }
+            if !configs.isEmpty { tools.append(MCPScope(hub: hub, servers: Set(configs.map(\.id)), workspace: Self.mediaFolder(for: imp.id))) }
             if allowed { tools.append(PocketTools(talk: sender == nil ? talk : PocketTalk(animations: talk.animations, play: talk.play))) }
             // The skills, unless the Imp has `use_skill` switched off.
             let skills = allowed && !(imp.toolsOff ?? []).contains(ToolRegistry.ownID(.skills, tool: OwnTools.useSkill)) ? library : nil

@@ -68,7 +68,7 @@ enum LiveMedia {
         let specs = try await client.listTools()
         let spec = try #require(specs.first { $0.name == tool }, "tools: \(specs.map(\.name))")
         print("live media: \(tool) schema \(spec.inputSchema.jsonString)")
-        let answer = try await client.callTool(name: tool, arguments: arguments)
+        let answer = try await client.callTool(name: tool, arguments: arguments, workspace: FileManager.default.temporaryDirectory)
         await client.close()
         print("live media: \(tool) answered \(answer.prefix(500).replacingOccurrences(of: "\n", with: " | "))")
         return answer
@@ -123,13 +123,14 @@ private actor LiveMediaCalls {
         let folder = try LiveMedia.folder()
         defer { try? FileManager.default.removeItem(at: folder) }
         let hub = MCPHub()
-        await hub.update([try LiveMedia.image(in: folder), try LiveMedia.speech(in: folder)])
+        let servers = [try LiveMedia.image(in: folder), try LiveMedia.speech(in: folder)]
+        await hub.update(servers)
         let offered = await hub.tools().map(\.name)
         print("live media: offered \(offered)")
         #expect(offered.contains { $0.contains("generate_image") } && offered.contains { $0.contains("generate_speech") }, "\(offered)")
 
         let calls = LiveMediaCalls()
-        let agent = Agent(client: live.client, model: live.model, tools: hub, maxSteps: 6)
+        let agent = Agent(client: live.client, model: live.model, tools: MCPScope(hub: hub, servers: Set(servers.map(\.id)), workspace: folder), maxSteps: 6)
         let (reply, transcript) = try await agent.run([
             .system("You are Pip, a small desktop helper. Use your tools when asked. Answer in one short sentence."),
             .user("Please draw a tiny green leaf with your picture tool, then say \"Hello from Pip\" aloud with your speech tool."),

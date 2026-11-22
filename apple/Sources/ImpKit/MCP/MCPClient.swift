@@ -71,16 +71,40 @@ public actor MCPClient {
         return tools
     }
 
-    /// Calls a tool and returns its content as text. `argumentsJSON` is what the model wrote.
-    public func callTool(name: String, argumentsJSON: String) async throws -> String {
+    /// Calls a tool and returns the text the model reads. `argumentsJSON` is what the model wrote.
+    /// Pictures, sound and other files the tool hands back are saved in `workspace` (`saveMedia`).
+    public func callTool(name: String, argumentsJSON: String, workspace: URL) async throws -> String {
         let result = try await request("tools/call", timeout: 120) {
             try mcpToolsCallRequest(id: $0, name: name, arguments: argumentsJSON, protocolVersion: version)
         }
-        return try protocolCall { try mcpToolResultText(resultJson: result) }
+        let read = try protocolCall { try mcpToolResult(resultJson: result) }
+        return Self.saveMedia(read, in: workspace)
     }
 
-    public func callTool(name: String, arguments: JSONValue) async throws -> String {
-        try await callTool(name: name, argumentsJSON: arguments.jsonString)
+    public func callTool(name: String, arguments: JSONValue, workspace: URL) async throws -> String {
+        try await callTool(name: name, argumentsJSON: arguments.jsonString, workspace: workspace)
+    }
+
+    /// The text of a result, with each medium saved at the path the core gives it (`media/…` in the
+    /// workspace). The model reads that path and embeds it in its reply to show it; never the bytes,
+    /// so a picture or a voice costs a line of context, not thousands of tokens.
+    static func saveMedia(_ result: McpToolResult, in workspace: URL) -> String {
+        let lines = result.parts.map { part -> String in
+            switch part {
+            case .text(let text):
+                return text
+            case .media(let kind, _, let data, let path):
+                let file = workspace.appendingPathComponent(path)
+                do {
+                    try FileManager.default.createDirectory(at: file.deletingLastPathComponent(), withIntermediateDirectories: true)
+                    try data.write(to: file, options: .withoutOverwriting)
+                    return mcpMediaSaved(kind: kind, path: path)
+                } catch {
+                    return mcpMediaNotSaved(kind: kind, problem: error.localizedDescription)
+                }
+            }
+        }
+        return mcpToolText(lines: lines, error: result.error)
     }
 
     /// `handler` runs once if the server goes away by itself (not on `close()`), at once if it already has.

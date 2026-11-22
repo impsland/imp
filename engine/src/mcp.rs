@@ -16,5 +16,8 @@ pub mod protocol;
 pub mod setup;
 
 #[cfg(feature = "io")]
-pub use client::{McpClient, McpEndpoint, McpError, McpHost, McpSecrets, McpServerSpec, McpSignIn};
+pub use client::{
+    McpClient, McpEndpoint, McpError, McpHost, McpSecrets, McpServerSpec, McpSignIn,
+    save_tool_result,
+};
 pub use protocol::{McpTool, exposed_name};

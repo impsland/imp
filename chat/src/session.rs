@@ -199,7 +199,11 @@ impl Session {
                 inner: Rc::new(Toolbox::new()),
             }),
             gate,
-            mcp: Rc::new(McpHost::connect(&[], MCP_TIMEOUT).await.0),
+            mcp: Rc::new(
+                McpHost::connect(&[], MCP_TIMEOUT, &settings.workspace)
+                    .await
+                    .0,
+            ),
             servers: Vec::new(),
             warnings: Vec::new(),
             notices: Vec::new(),
@@ -325,7 +329,8 @@ impl Session {
             self.settings.store.clone(),
             &self.loaded.config.mcp,
         ));
-        let (mcp, problems) = McpHost::connect_with(&specs, MCP_TIMEOUT, Some(sign_in)).await;
+        let (mcp, problems) =
+            McpHost::connect_with(&specs, MCP_TIMEOUT, &self.workspace, Some(sign_in)).await;
         let mcp = Rc::new(mcp);
         let offered = imp_engine::ToolHost::tools(&*mcp);
         self.servers = specs

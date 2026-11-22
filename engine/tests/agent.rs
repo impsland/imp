@@ -119,9 +119,14 @@ async fn lists_calls_and_reports_errors() {
         .map(|t| t.name)
         .collect();
     assert_eq!(names, ["echo", "fail", "slow", "pid", "secret"]);
-    let text = client.call_tool("echo", json!({ "text": "hi" })).await;
+    let text = client
+        .call_tool("echo", json!({ "text": "hi" }), &std::env::temp_dir())
+        .await;
     assert_eq!(text.unwrap(), "echo: hi");
-    let failed = client.call_tool("fail", json!({})).await.unwrap();
+    let failed = client
+        .call_tool("fail", json!({}), &std::env::temp_dir())
+        .await
+        .unwrap();
     assert_eq!(failed, "Error: it broke");
 }
 
@@ -130,7 +135,10 @@ async fn a_slow_call_times_out() {
     let client = McpClient::connect(&spec(&[]), Duration::from_millis(800))
         .await
         .unwrap();
-    let error = client.call_tool("slow", json!({})).await.unwrap_err();
+    let error = client
+        .call_tool("slow", json!({}), &std::env::temp_dir())
+        .await
+        .unwrap_err();
     assert!(error.to_string().contains("in time"), "{error}");
 }
 
@@ -147,7 +155,8 @@ async fn a_missing_command_is_a_plain_error() {
         .err()
         .unwrap();
     assert!(error.to_string().contains("could not start"));
-    let (host, problems) = McpHost::connect(&[s], Duration::from_secs(2)).await;
+    let (host, problems) =
+        McpHost::connect(&[s], Duration::from_secs(2), &std::env::temp_dir()).await;
     assert_eq!(problems.len(), 1);
     assert!(imp_engine::ToolHost::tools(&host).is_empty());
 }
@@ -158,7 +167,10 @@ async fn the_child_is_killed_on_drop() {
     let client = McpClient::connect(&spec(&[]), Duration::from_secs(20))
         .await
         .unwrap();
-    let pid = client.call_tool("pid", json!({})).await.unwrap();
+    let pid = client
+        .call_tool("pid", json!({}), &std::env::temp_dir())
+        .await
+        .unwrap();
     let alive = |pid: &str| {
         std::process::Command::new("kill")
             .args(["-0", pid])
@@ -241,7 +253,8 @@ fn text_body(text: &str) -> String {
 }
 
 async fn toolbox(env: &[(&str, &str)]) -> Toolbox {
-    let (host, problems) = McpHost::connect(&[spec(env)], Duration::from_secs(20)).await;
+    let (host, problems) =
+        McpHost::connect(&[spec(env)], Duration::from_secs(20), &std::env::temp_dir()).await;
     assert!(problems.is_empty(), "{problems:?}");
     let mut toolbox = Toolbox::new();
     toolbox.add(Rc::new(host));
@@ -507,4 +520,41 @@ async fn other_tools_stay_one_after_another_in_order() {
         .filter_map(|m| m.tool_call_id.as_deref())
         .collect();
     assert_eq!(ids, ["c1", "c2", "c3", "c4", "c5"]);
+}
+
+#[test]
+fn media_from_a_tool_is_saved_in_the_workspace_and_the_model_reads_its_path() {
+    use base64::Engine as _;
+    let workspace = tempfile::tempdir().unwrap();
+    let png = base64::engine::general_purpose::STANDARD.encode(b"\x89PNG picture");
+    let result = json!({ "content": [
+        { "type": "image", "data": png, "mimeType": "image/png" },
+        { "type": "text", "text": "done" },
+    ] });
+    let text = imp_engine::mcp::save_tool_result(&result, workspace.path());
+    let (note, rest) = text.split_once('\n').unwrap();
+    assert_eq!(rest, "done");
+    let path = note
+        .strip_prefix("[image saved as ")
+        .and_then(|n| n.split_once(". To show it, put ![what it is]("))
+        .map(|(path, _)| path)
+        .unwrap_or_else(|| panic!("{note}"));
+    assert!(
+        path.starts_with("media/image-") && path.ends_with(".png"),
+        "{path}"
+    );
+    assert_eq!(
+        std::fs::read(workspace.path().join(path)).unwrap(),
+        b"\x89PNG picture"
+    );
+    assert!(!text.contains(&png), "the model never reads the bytes");
+
+    // A workspace that can't be written to: the model is told, and nothing breaks.
+    let blocked = workspace.path().join("file");
+    std::fs::write(&blocked, b"").unwrap();
+    let text = imp_engine::mcp::save_tool_result(&result, &blocked);
+    assert!(
+        text.starts_with("[image that could not be saved: "),
+        "{text}"
+    );
 }

@@ -45,10 +45,11 @@ final class PocketStore {
         persist()
     }
 
-    /// Forgets an Imp and every secret of it.
+    /// Forgets an Imp, every secret of it and the media its tools made.
     func remove(_ id: UUID) {
         guard let imp = imp(id) else { return }
         secrets.removeAll(of: imp)
+        try? FileManager.default.removeItem(at: PocketBrain.mediaFolder(for: id))
         imps.removeAll { $0.id == id }
         persist()
     }
